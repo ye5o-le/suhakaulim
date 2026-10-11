@@ -145,6 +145,19 @@ summary { cursor: pointer; font-weight: 700; padding: 12px 0; }
 .lv1 { background: color-mix(in srgb, var(--c-cold) 20%, transparent); color: var(--c-cold); }
 .lv2 { background: color-mix(in srgb, var(--c-tease) 22%, transparent); color: var(--c-tease); }
 .lv3 { background: color-mix(in srgb, var(--warn) 20%, transparent); color: var(--warn); }
+.crowd { background: var(--surface); border-radius: 16px; padding: 16px; display: grid; gap: 12px; }
+.crowd .lead { margin: 0; font-size: 14px; }
+.crowd .lead b { font-family: var(--f-display); font-weight: 400; font-size: 20px; }
+.crowd .msg-empty { margin: 0; font-size: 13.5px; color: var(--muted); }
+.ranks { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+.ranks li { display: grid; gap: 4px; }
+.ranks .top { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; }
+.ranks .top span:last-child { font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+.ranks .me-tag { font-size: 11px; font-weight: 700; background: var(--accent); color: var(--accent-ink); border-radius: 999px; padding: 1px 7px; margin-left: 6px; }
+.ranks .meter::after { display: none; }
+.ranks .meter i { background: var(--muted); }
+.ranks li.mine-row .meter i { background: var(--accent); }
+.ranks li.mine-row .top span:first-child { font-weight: 700; }
 @media (prefers-reduced-motion: reduce) { .pop, .typing .bubble i { animation: none; } .bar i { transition: none; } }
 </style>
 </head>
@@ -278,7 +291,10 @@ const TYPES = {
   block: ['내 말만 직진형', '말하는 것보다 듣는 쪽이 조금 약해요. 대화는 주고받을 때 재밌어져요.'],
   cold:  ['쿨한 척 무심형', '확인하기, 사과하기, 예의 지키기를 가끔 건너뛰어요. 친한 사이일수록 더 필요한 것들이에요.']
 };
-const LEVELS = ['괜찮아요', '살짝 주의', '주의', '꼭 고쳐요'];
+const CLEAN_TYPE = ['무첨가 청정 말씨형', '나쁜 성분이 거의 없는 깨끗한 말습관이에요. 친구들이 나와 대화할 때 편안함을 느낄 거예요.'];
+const TYPE_KEYS = [...ORDER, 'clean'];
+const typeName = k => (k === 'clean' ? CLEAN_TYPE : TYPES[k])[0];
+const LEVELS =['괜찮아요', '살짝 주의', '주의', '꼭 고쳐요'];
 const AVATAR_COLORS = ['#4F7CC9', '#D0685A', '#3E9C78', '#9A6BC7', '#D49A2A', '#3A97A8', '#C2557F'];
 
 const $ = id => document.getElementById(id);
@@ -379,7 +395,9 @@ function showResult() {
   const top = ranked[0];
   const clean = sums[top] <= 2;
   const grade = health >= 85 ? '청정 말씨' : health >= 65 ? '조금만 덜어내면 OK' : health >= 40 ? '성분 조절 필요' : '말 다이어트 시급';
-  const [typeName, typeDesc] = clean ? ['무첨가 청정 말씨형', '나쁜 성분이 거의 없는 깨끗한 말습관이에요. 친구들이 나와 대화할 때 편안함을 느낄 거예요.'] : TYPES[top];
+  myType = clean ? 'clean' : top;
+  saveFailed = false;
+  const [myName, typeDesc] = clean ? CLEAN_TYPE : TYPES[top];
   const high = ORDER.filter(k => pct(k) >= 45);
 
   const rows = ORDER.map(k => {
@@ -405,7 +423,7 @@ function showResult() {
 
   const r = $('result');
   r.innerHTML = `
-    <header><div class="eyebrow" style="font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:700">나의 말 유형</div><h1 class="type">${typeName}</h1><p class="sum">${typeDesc}</p></header>
+    <header><div class="eyebrow" style="font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:700">나의 말 유형</div><h1 class="type">${myName}</h1><p class="sum">${typeDesc}</p></header>
     <section class="label" aria-label="말 영양성분표">
       <h2>말 영양성분표</h2>
       <div class="meta"><span>총 내용량 15장면</span><span>1회 제공량 단톡방 하루치</span></div>
@@ -417,13 +435,63 @@ function showResult() {
     </section>
     <h2 class="section-title">말 바꾸기 팁 카드</h2>
     <div class="cards">${cards}</div>
+    <h2 class="section-title">다른 사람들은 어떤 유형?</h2>
+    <section class="crowd" id="crowd" aria-live="polite"></section>
     <details><summary>문항별로 돌아보기</summary><ul class="qlist">${qlist}</ul></details>
     <button class="btn" type="button" id="retryBtn">다시 해보기</button>
     <button class="btn ghost" type="button" id="homeBtn">처음 화면으로</button>`;
   $('quiz').hidden = true; r.hidden = false; r.scrollTop = 0;
   $('retryBtn').addEventListener('click', start);
   $('homeBtn').addEventListener('click', () => { runId++; r.hidden = true; $('intro').hidden = false; });
+  renderCrowd();
+  saveMine();
 }
+
+// ---------- shared tally: one result doc per person under results/<id> ----------
+let db = null, uid = null, crowd = null, crowdState = 'loading', myType = null, saveFailed = false;
+
+function saveMine() {
+  if (!db || !uid || !myType) return;
+  db.doc('results/' + uid).set({ type: myType, at: Date.now() })
+    .catch(() => { saveFailed = true; renderCrowd(); });
+}
+
+function renderCrowd() {
+  const box = $('crowd');
+  if (!box) return;
+  if (crowdState === 'loading') { box.innerHTML = '<p class="msg-empty">다른 사람들 결과를 불러오는 중이에요…</p>'; return; }
+  if (crowdState === 'off') { box.innerHTML = '<p class="msg-empty">claude.ai에 로그인한 상태로 공유 링크를 열면 다른 사람들 결과를 함께 볼 수 있어요.</p>'; return; }
+  const counts = Object.fromEntries(TYPE_KEYS.map(k => [k, 0]));
+  (crowd || []).forEach(d => { if (d && TYPE_KEYS.includes(d.type)) counts[d.type]++; });
+  const total = TYPE_KEYS.reduce((a, k) => a + counts[k], 0);
+  const note = saveFailed ? '<p class="msg-empty">내 결과는 집계에 들어가지 않았어요. 참여하려면 이 페이지를 공유받을 때 "참여자(Contributor)" 권한이 필요해요.</p>' : '';
+  if (!total) { box.innerHTML = '<p class="msg-empty">아직 집계된 결과가 없어요. 첫 번째 참여자가 되어 보세요.</p>' + note; return; }
+  const ranked = TYPE_KEYS.slice().sort((a, b) => counts[b] - counts[a]);
+  const max = counts[ranked[0]];
+  const winners = ranked.filter(k => counts[k] === max).map(typeName);
+  const items = ranked.map(k => {
+    const p = Math.round(counts[k] / total * 100);
+    const mine = k === myType;
+    return `<li class="${mine ? 'mine-row' : ''}"><div class="top"><span>${typeName(k)}${mine ? '<span class="me-tag">나</span>' : ''}</span><span>${counts[k]}명 · ${p}%</span></div><div class="meter" role="img" aria-label="${typeName(k)} ${counts[k]}명"><i style="width:${max ? counts[k] / max * 100 : 0}%"></i></div></li>`;
+  }).join('');
+  box.innerHTML = `<p class="lead">지금까지 <b>${total}명</b> 참여 · 가장 많이 나온 유형은 <b>${winners.join(', ')}</b></p><ul class="ranks">${items}</ul>${note}`;
+}
+
+(async () => {
+  try {
+    const use = window.claude && window.claude.use;
+    if (!use) { crowdState = 'off'; renderCrowd(); return; }
+    const [d, u] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+    if (!d) { crowdState = 'off'; renderCrowd(); return; }
+    db = d;
+    uid = u ? await u.id() : null;
+    db.collection('results').onSnapshot(snap => {
+      crowd = snap.docs.map(x => x.data());
+      crowdState = 'ready'; renderCrowd();
+    }, () => { crowdState = 'off'; renderCrowd(); });
+    saveMine();
+  } catch (e) { crowdState = 'off'; renderCrowd(); }
+})();
 
 $('startBtn').addEventListener('click', start);
 </script>
