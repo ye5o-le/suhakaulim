@@ -179,7 +179,7 @@ summary { cursor: pointer; font-weight: 700; padding: 12px 0; }
       <li><b>3</b><span>결과지에서 성분표와 말 바꾸기 팁 카드를 확인해요.</span></li>
     </ul>
     <button class="btn" id="startBtn" type="button">단톡방 입장하기</button>
-    <p class="fine">약 3분 걸려요. 답변은 어디에도 저장되거나 전송되지 않아요.</p>
+    <p class="fine">약 3분 걸려요. 이름은 묻지 않아요. 결과 유형과 성분 점수만 이름 없이 우리 반 집계에 쓰여요.</p>
   </section>
 
   <section class="screen" id="quiz" hidden>
@@ -396,6 +396,7 @@ function showResult() {
   const clean = sums[top] <= 2;
   const grade = health >= 85 ? '청정 말씨' : health >= 65 ? '조금만 덜어내면 OK' : health >= 40 ? '성분 조절 필요' : '말 다이어트 시급';
   myType = clean ? 'clean' : top;
+  myScores = { health, ...Object.fromEntries(ORDER.map(k => [k, sums[k]])) };
   saveFailed = false;
   const [myName, typeDesc] = clean ? CLEAN_TYPE : TYPES[top];
   const high = ORDER.filter(k => pct(k) >= 45);
@@ -447,25 +448,58 @@ function showResult() {
   saveMine();
 }
 
-// ---------- shared tally: one result doc per person under results/<id> ----------
-let db = null, uid = null, crowd = null, crowdState = 'loading', myType = null, saveFailed = false;
+// ---------- shared tally: Google Apps Script web app writing to a Google Sheet ----------
+// 선생님이 배포한 웹 앱 주소를 넣으세요 (설정 방법: SETUP.md)
+const API_URL = '';
+const CLASS_ID = (new URLSearchParams(location.search).get('class') || '').slice(0, 20);
+let crowd = null, crowdState = API_URL ? 'loading' : 'off', myType = null, myScores = null, saveFailed = false;
 
-function saveMine() {
-  if (!db || !uid || !myType) return;
-  db.doc('results/' + uid).set({ type: myType, at: Date.now() })
-    .catch(() => { saveFailed = true; renderCrowd(); });
+function deviceId() {
+  try {
+    let id = localStorage.getItem('malLabelDevice');
+    if (!id) { id = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('malLabelDevice', id); }
+    return id;
+  } catch (e) { return 'tmp-' + Math.random().toString(36).slice(2); }
+}
+
+function applyTally(t) {
+  if (!t || typeof t.counts !== 'object') throw new Error('bad tally');
+  crowd = t.counts; crowdState = 'ready'; renderCrowd();
+}
+
+async function loadTally() {
+  if (!API_URL) return;
+  crowdState = 'loading'; renderCrowd();
+  try {
+    const res = await fetch(API_URL + '?class=' + encodeURIComponent(CLASS_ID));
+    applyTally(await res.json());
+  } catch (e) { crowdState = 'error'; renderCrowd(); }
+}
+
+async function saveMine() {
+  if (!API_URL || !myType) return;
+  saveFailed = false; crowdState = 'loading'; renderCrowd();
+  try {
+    // text/plain body keeps this a simple request, so Apps Script needs no CORS preflight
+    const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ device: deviceId(), class: CLASS_ID, type: myType, scores: myScores }) });
+    const t = await res.json();
+    if (!t.ok) saveFailed = true;
+    applyTally(t);
+  } catch (e) { saveFailed = true; loadTally(); }
 }
 
 function renderCrowd() {
   const box = $('crowd');
   if (!box) return;
+  const scope = CLASS_ID ? `${CLASS_ID}반에서 ` : '';
   if (crowdState === 'loading') { box.innerHTML = '<p class="msg-empty">다른 사람들 결과를 불러오는 중이에요…</p>'; return; }
-  if (crowdState === 'off') { box.innerHTML = '<p class="msg-empty">claude.ai에 로그인한 상태로 공유 링크를 열면 다른 사람들 결과를 함께 볼 수 있어요.</p>'; return; }
-  const counts = Object.fromEntries(TYPE_KEYS.map(k => [k, 0]));
-  (crowd || []).forEach(d => { if (d && TYPE_KEYS.includes(d.type)) counts[d.type]++; });
+  if (crowdState === 'off') { box.innerHTML = '<p class="msg-empty">결과 집계가 아직 연결되지 않았어요. 선생님이 설정을 마치면 여기에 다른 사람들 결과가 보여요.</p>'; return; }
+  if (crowdState === 'error') { box.innerHTML = '<p class="msg-empty">다른 사람들 결과를 불러오지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.</p><button class="btn ghost" type="button" id="crowdRetry">다시 불러오기</button>'; $('crowdRetry').addEventListener('click', loadTally); return; }
+  const counts = Object.fromEntries(TYPE_KEYS.map(k => [k, Math.max(0, Number(crowd && crowd[k]) || 0)]));
   const total = TYPE_KEYS.reduce((a, k) => a + counts[k], 0);
-  const note = saveFailed ? '<p class="msg-empty">내 결과는 집계에 들어가지 않았어요. 참여하려면 이 페이지를 공유받을 때 "참여자(Contributor)" 권한이 필요해요.</p>' : '';
-  if (!total) { box.innerHTML = '<p class="msg-empty">아직 집계된 결과가 없어요. 첫 번째 참여자가 되어 보세요.</p>' + note; return; }
+  const note = saveFailed ? '<p class="msg-empty">내 결과를 보내지 못해서 집계에 들어가지 않았어요. 다시 해보기를 누르면 다시 보내요.</p>' : '';
+  const refresh = '<button class="btn ghost" type="button" id="crowdRefresh">최신 결과 보기</button>';
+  if (!total) { box.innerHTML = '<p class="msg-empty">아직 집계된 결과가 없어요. 첫 번째 참여자가 되어 보세요.</p>' + note + refresh; $('crowdRefresh').addEventListener('click', loadTally); return; }
   const ranked = TYPE_KEYS.slice().sort((a, b) => counts[b] - counts[a]);
   const max = counts[ranked[0]];
   const winners = ranked.filter(k => counts[k] === max).map(typeName);
@@ -474,24 +508,9 @@ function renderCrowd() {
     const mine = k === myType;
     return `<li class="${mine ? 'mine-row' : ''}"><div class="top"><span>${typeName(k)}${mine ? '<span class="me-tag">나</span>' : ''}</span><span>${counts[k]}명 · ${p}%</span></div><div class="meter" role="img" aria-label="${typeName(k)} ${counts[k]}명"><i style="width:${max ? counts[k] / max * 100 : 0}%"></i></div></li>`;
   }).join('');
-  box.innerHTML = `<p class="lead">지금까지 <b>${total}명</b> 참여 · 가장 많이 나온 유형은 <b>${winners.join(', ')}</b></p><ul class="ranks">${items}</ul>${note}`;
+  box.innerHTML = `<p class="lead">${scope}지금까지 <b>${total}명</b> 참여 · 가장 많이 나온 유형은 <b>${winners.join(', ')}</b></p><ul class="ranks">${items}</ul>${note}${refresh}`;
+  $('crowdRefresh').addEventListener('click', loadTally);
 }
-
-(async () => {
-  try {
-    const use = window.claude && window.claude.use;
-    if (!use) { crowdState = 'off'; renderCrowd(); return; }
-    const [d, u] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
-    if (!d) { crowdState = 'off'; renderCrowd(); return; }
-    db = d;
-    uid = u ? await u.id() : null;
-    db.collection('results').onSnapshot(snap => {
-      crowd = snap.docs.map(x => x.data());
-      crowdState = 'ready'; renderCrowd();
-    }, () => { crowdState = 'off'; renderCrowd(); });
-    saveMine();
-  } catch (e) { crowdState = 'off'; renderCrowd(); }
-})();
 
 $('startBtn').addEventListener('click', start);
 </script>
