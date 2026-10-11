@@ -145,19 +145,6 @@ summary { cursor: pointer; font-weight: 700; padding: 12px 0; }
 .lv1 { background: color-mix(in srgb, var(--c-cold) 20%, transparent); color: var(--c-cold); }
 .lv2 { background: color-mix(in srgb, var(--c-tease) 22%, transparent); color: var(--c-tease); }
 .lv3 { background: color-mix(in srgb, var(--warn) 20%, transparent); color: var(--warn); }
-.crowd { background: var(--surface); border-radius: 16px; padding: 16px; display: grid; gap: 12px; }
-.crowd .lead { margin: 0; font-size: 14px; }
-.crowd .lead b { font-family: var(--f-display); font-weight: 400; font-size: 20px; }
-.crowd .msg-empty { margin: 0; font-size: 13.5px; color: var(--muted); }
-.ranks { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
-.ranks li { display: grid; gap: 4px; }
-.ranks .top { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; }
-.ranks .top span:last-child { font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
-.ranks .me-tag { font-size: 11px; font-weight: 700; background: var(--accent); color: var(--accent-ink); border-radius: 999px; padding: 1px 7px; margin-left: 6px; }
-.ranks .meter::after { display: none; }
-.ranks .meter i { background: var(--muted); }
-.ranks li.mine-row .meter i { background: var(--accent); }
-.ranks li.mine-row .top span:first-child { font-weight: 700; }
 @media (prefers-reduced-motion: reduce) { .pop, .typing .bubble i { animation: none; } .bar i { transition: none; } }
 </style>
 </head>
@@ -179,7 +166,7 @@ summary { cursor: pointer; font-weight: 700; padding: 12px 0; }
       <li><b>3</b><span>결과지에서 성분표와 말 바꾸기 팁 카드를 확인해요.</span></li>
     </ul>
     <button class="btn" id="startBtn" type="button">단톡방 입장하기</button>
-    <p class="fine">약 3분 걸려요. 이름은 묻지 않아요. 결과 유형과 성분 점수만 이름 없이 우리 반 집계에 쓰여요.</p>
+    <p class="fine">약 3분 걸려요. 답변은 어디에도 저장되거나 전송되지 않아요.</p>
   </section>
 
   <section class="screen" id="quiz" hidden>
@@ -292,8 +279,6 @@ const TYPES = {
   cold:  ['쿨한 척 무심형', '확인하기, 사과하기, 예의 지키기를 가끔 건너뛰어요. 친한 사이일수록 더 필요한 것들이에요.']
 };
 const CLEAN_TYPE = ['무첨가 청정 말씨형', '나쁜 성분이 거의 없는 깨끗한 말습관이에요. 친구들이 나와 대화할 때 편안함을 느낄 거예요.'];
-const TYPE_KEYS = [...ORDER, 'clean'];
-const typeName = k => (k === 'clean' ? CLEAN_TYPE : TYPES[k])[0];
 const LEVELS =['괜찮아요', '살짝 주의', '주의', '꼭 고쳐요'];
 const AVATAR_COLORS = ['#4F7CC9', '#D0685A', '#3E9C78', '#9A6BC7', '#D49A2A', '#3A97A8', '#C2557F'];
 
@@ -395,9 +380,6 @@ function showResult() {
   const top = ranked[0];
   const clean = sums[top] <= 2;
   const grade = health >= 85 ? '청정 말씨' : health >= 65 ? '조금만 덜어내면 OK' : health >= 40 ? '성분 조절 필요' : '말 다이어트 시급';
-  myType = clean ? 'clean' : top;
-  myScores = { health, ...Object.fromEntries(ORDER.map(k => [k, sums[k]])) };
-  saveFailed = false;
   const [myName, typeDesc] = clean ? CLEAN_TYPE : TYPES[top];
   const high = ORDER.filter(k => pct(k) >= 45);
 
@@ -436,80 +418,12 @@ function showResult() {
     </section>
     <h2 class="section-title">말 바꾸기 팁 카드</h2>
     <div class="cards">${cards}</div>
-    <h2 class="section-title">다른 사람들은 어떤 유형?</h2>
-    <section class="crowd" id="crowd" aria-live="polite"></section>
     <details><summary>문항별로 돌아보기</summary><ul class="qlist">${qlist}</ul></details>
     <button class="btn" type="button" id="retryBtn">다시 해보기</button>
     <button class="btn ghost" type="button" id="homeBtn">처음 화면으로</button>`;
   $('quiz').hidden = true; r.hidden = false; r.scrollTop = 0;
   $('retryBtn').addEventListener('click', start);
   $('homeBtn').addEventListener('click', () => { runId++; r.hidden = true; $('intro').hidden = false; });
-  renderCrowd();
-  saveMine();
-}
-
-// ---------- shared tally: Google Apps Script web app writing to a Google Sheet ----------
-// 선생님이 배포한 웹 앱 주소를 넣으세요 (설정 방법: SETUP.md)
-const API_URL = '';
-const CLASS_ID = (new URLSearchParams(location.search).get('class') || '').slice(0, 20);
-let crowd = null, crowdState = API_URL ? 'loading' : 'off', myType = null, myScores = null, saveFailed = false;
-
-function deviceId() {
-  try {
-    let id = localStorage.getItem('malLabelDevice');
-    if (!id) { id = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('malLabelDevice', id); }
-    return id;
-  } catch (e) { return 'tmp-' + Math.random().toString(36).slice(2); }
-}
-
-function applyTally(t) {
-  if (!t || typeof t.counts !== 'object') throw new Error('bad tally');
-  crowd = t.counts; crowdState = 'ready'; renderCrowd();
-}
-
-async function loadTally() {
-  if (!API_URL) return;
-  crowdState = 'loading'; renderCrowd();
-  try {
-    const res = await fetch(API_URL + '?class=' + encodeURIComponent(CLASS_ID));
-    applyTally(await res.json());
-  } catch (e) { crowdState = 'error'; renderCrowd(); }
-}
-
-async function saveMine() {
-  if (!API_URL || !myType) return;
-  saveFailed = false; crowdState = 'loading'; renderCrowd();
-  try {
-    // text/plain body keeps this a simple request, so Apps Script needs no CORS preflight
-    const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ device: deviceId(), class: CLASS_ID, type: myType, scores: myScores }) });
-    const t = await res.json();
-    if (!t.ok) saveFailed = true;
-    applyTally(t);
-  } catch (e) { saveFailed = true; loadTally(); }
-}
-
-function renderCrowd() {
-  const box = $('crowd');
-  if (!box) return;
-  const scope = CLASS_ID ? `${CLASS_ID}반에서 ` : '';
-  if (crowdState === 'loading') { box.innerHTML = '<p class="msg-empty">다른 사람들 결과를 불러오는 중이에요…</p>'; return; }
-  if (crowdState === 'off') { box.innerHTML = '<p class="msg-empty">결과 집계가 아직 연결되지 않았어요. 선생님이 설정을 마치면 여기에 다른 사람들 결과가 보여요.</p>'; return; }
-  if (crowdState === 'error') { box.innerHTML = '<p class="msg-empty">다른 사람들 결과를 불러오지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.</p><button class="btn ghost" type="button" id="crowdRetry">다시 불러오기</button>'; $('crowdRetry').addEventListener('click', loadTally); return; }
-  const counts = Object.fromEntries(TYPE_KEYS.map(k => [k, Math.max(0, Number(crowd && crowd[k]) || 0)]));
-  const total = TYPE_KEYS.reduce((a, k) => a + counts[k], 0);
-  const note = saveFailed ? '<p class="msg-empty">내 결과를 보내지 못해서 집계에 들어가지 않았어요. 다시 해보기를 누르면 다시 보내요.</p>' : '';
-  const refresh = '<button class="btn ghost" type="button" id="crowdRefresh">최신 결과 보기</button>';
-  if (!total) { box.innerHTML = '<p class="msg-empty">아직 집계된 결과가 없어요. 첫 번째 참여자가 되어 보세요.</p>' + note + refresh; $('crowdRefresh').addEventListener('click', loadTally); return; }
-  const ranked = TYPE_KEYS.slice().sort((a, b) => counts[b] - counts[a]);
-  const max = counts[ranked[0]];
-  const winners = ranked.filter(k => counts[k] === max).map(typeName);
-  const items = ranked.map(k => {
-    const p = Math.round(counts[k] / total * 100);
-    const mine = k === myType;
-    return `<li class="${mine ? 'mine-row' : ''}"><div class="top"><span>${typeName(k)}${mine ? '<span class="me-tag">나</span>' : ''}</span><span>${counts[k]}명 · ${p}%</span></div><div class="meter" role="img" aria-label="${typeName(k)} ${counts[k]}명"><i style="width:${max ? counts[k] / max * 100 : 0}%"></i></div></li>`;
-  }).join('');
-  box.innerHTML = `<p class="lead">${scope}지금까지 <b>${total}명</b> 참여 · 가장 많이 나온 유형은 <b>${winners.join(', ')}</b></p><ul class="ranks">${items}</ul>${note}${refresh}`;
-  $('crowdRefresh').addEventListener('click', loadTally);
 }
 
 $('startBtn').addEventListener('click', start);
