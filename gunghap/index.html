@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>사주 궁합 명식</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700;900&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: 만세력 명식표를 중심에 둔 한 줄 흐름 — 입력(두 사람) → 총평 → 두 명식표 → 교차표 → 항목별 해설 → 연도별 흐름 */
+:root {
+  --bg: #EEF0F4;
+  --surface: #FFFFFF;
+  --sunk: #E4E7EE;
+  --ink: #1A1E2C;
+  --muted: #5C6378;
+  --line: #D3D7E1;
+  --accent: #33429A;
+  --accent-ink: #FFFFFF;
+  --good: #1F7A6B;
+  --bad: #B4372B;
+  --love: #B23A72;
+  --wood: #2E7D4F; --wood-ink: #FFFFFF;
+  --fire: #C8432B; --fire-ink: #FFFFFF;
+  --earth: #D7A536; --earth-ink: #2B1F04;
+  --metal: #CDD1DA; --metal-ink: #1D2230;
+  --water: #1F2A44; --water-ink: #FFFFFF;
+  --f-han: "Noto Serif KR", "Nanum Myeongjo", "Batang", serif;
+  --f-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11131B; --surface: #1A1D29; --sunk: #232737; --ink: #E6E8F1; --muted: #9DA3B8; --line: #2F3448;
+    --accent: #9BA7F4; --accent-ink: #12162B; --good: #4FC2AE; --bad: #F07A6C; --love: #F07FB0;
+    --wood: #3C9C64; --fire: #DD5A42; --earth: #DDB24C; --metal: #D6DAE3; --water: #34467A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11131B; --surface: #1A1D29; --sunk: #232737; --ink: #E6E8F1; --muted: #9DA3B8; --line: #2F3448;
+  --accent: #9BA7F4; --accent-ink: #12162B; --good: #4FC2AE; --bad: #F07A6C; --love: #F07FB0;
+  --wood: #3C9C64; --fire: #DD5A42; --earth: #DDB24C; --metal: #D6DAE3; --water: #34467A;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.6; }
+h1, h2, h3 { margin: 0; text-wrap: balance; font-family: var(--f-han); font-weight: 700; }
+p { margin: 0; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 1100px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.fine { font-size: 12.5px; color: var(--muted); }
+.han { font-family: var(--f-han); }
+
+/* ---------- 머리 ---------- */
+header.top { padding-block: 28px 8px; }
+.brand { display: flex; align-items: center; gap: 14px; }
+.seal { flex: none; width: 54px; height: 54px; border-radius: 8px; background: var(--fire); color: var(--fire-ink); display: grid; place-items: center; font-family: var(--f-han); font-weight: 900; font-size: 32px; line-height: 1; transform: rotate(-4deg); }
+.brand h1 { font-size: clamp(26px, 4.6vw, 36px); line-height: 1.15; letter-spacing: -0.01em; }
+.brand p { color: var(--muted); font-size: 14px; }
+
+/* ---------- 입력 ---------- */
+form.inputs { display: grid; gap: 14px; padding-block: 18px; }
+.people { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.person { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 12px; min-width: 0; }
+.person h2 { font-size: 17px; display: flex; align-items: baseline; gap: 8px; }
+.person h2 small { font-family: var(--f-body); font-weight: 400; font-size: 12px; color: var(--muted); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+.fld { display: grid; gap: 4px; min-width: 0; }
+.fld > span { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .02em; }
+.fld input, .fld select { height: 40px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); padding: 0 10px; min-width: 0; }
+.fld input[type=number] { width: 78px; font-variant-numeric: tabular-nums; }
+.fld.grow { flex: 1 1 140px; }
+.fld.grow input, .fld.grow select { width: 100%; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; height: 40px; }
+.seg label { display: grid; place-items: center; padding: 0 12px; cursor: pointer; font-size: 14px; background: var(--bg); }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg label:has(input:checked) { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.seg label:has(input:focus-visible) { outline: 3px solid var(--accent); outline-offset: -3px; }
+.chk { display: inline-flex; gap: 6px; align-items: center; font-size: 14px; height: 40px; cursor: pointer; }
+.chk input { width: 18px; height: 18px; accent-color: var(--accent); }
+.opts { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: end; justify-content: space-between; }
+.btn { border: 0; border-radius: 10px; padding: 0 22px; height: 46px; font-weight: 700; font-size: 16px; background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+.btn:hover { filter: brightness(1.08); }
+.err { color: var(--bad); font-weight: 700; font-size: 14px; }
+.example { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 99px; background: var(--sunk); color: var(--muted); }
+
+/* ---------- 총평 ---------- */
+section.block { padding-block: 22px; display: grid; gap: 14px; }
+section.block > h2 { font-size: 22px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+section.block > h2 small { font-family: var(--f-body); font-weight: 400; font-size: 13px; color: var(--muted); }
+.verdict { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 20px; display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 24px; align-items: center; }
+@media (max-width: 720px) { .verdict { grid-template-columns: minmax(0, 1fr); } }
+.dial { display: grid; justify-items: center; gap: 6px; text-align: center; }
+.dial svg { width: 180px; height: 180px; max-width: 100%; }
+.dial .grade { font-family: var(--f-han); font-weight: 900; font-size: 22px; }
+.dial .who { font-size: 13px; color: var(--muted); }
+.bars { display: grid; gap: 9px; min-width: 0; }
+.bar { display: grid; grid-template-columns: 112px minmax(0, 1fr) 42px; gap: 10px; align-items: center; font-size: 14px; }
+.bar .nm b { display: block; font-weight: 700; line-height: 1.2; }
+.bar .nm small { color: var(--muted); font-size: 11.5px; }
+.bar .track { height: 10px; background: var(--sunk); border-radius: 99px; overflow: hidden; }
+.bar .track i { display: block; height: 100%; border-radius: 99px; background: var(--accent); }
+.bar .track i.lo { background: var(--bad); }
+.bar .track i.hi { background: var(--good); }
+.bar .v { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
+.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.summary > div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.summary h3 { font-size: 15px; }
+.summary ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; }
+.summary .k-good h3 { color: var(--good); }
+.summary .k-bad h3 { color: var(--bad); }
+
+/* ---------- 명식표 ---------- */
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 14px; }
+.chart { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 14px; min-width: 0; align-content: start; }
+.chart .head { display: grid; gap: 2px; }
+.chart .head h3 { font-size: 19px; }
+.chart .head .meta { font-size: 13px; color: var(--muted); }
+.scroll { overflow-x: auto; }
+table.pillars { width: 100%; min-width: 300px; border-collapse: separate; border-spacing: 4px; table-layout: fixed; text-align: center; }
+table.pillars th { font-size: 11.5px; color: var(--muted); font-weight: 700; }
+table.pillars th.rh { width: 44px; text-align: left; }
+table.pillars td { font-size: 12.5px; line-height: 1.35; }
+table.pillars td.tg { font-weight: 700; }
+table.pillars td.day-col { background: color-mix(in srgb, var(--accent) 9%, transparent); border-radius: 6px; }
+.tile { border-radius: 8px; padding: 6px 2px 5px; display: grid; justify-items: center; gap: 0; border: 1px solid transparent; }
+.tile b { font-family: var(--f-han); font-weight: 900; font-size: 30px; line-height: 1.1; }
+.tile span { font-size: 11px; opacity: .9; }
+.tile.e0 { background: var(--wood); color: var(--wood-ink); }
+.tile.e1 { background: var(--fire); color: var(--fire-ink); }
+.tile.e2 { background: var(--earth); color: var(--earth-ink); }
+.tile.e3 { background: var(--metal); color: var(--metal-ink); }
+.tile.e4 { background: var(--water); color: var(--water-ink); border-color: var(--line); }
+.tile.none { background: var(--sunk); color: var(--muted); }
+.hid { font-family: var(--f-han); font-size: 14px; letter-spacing: .05em; }
+.hid i { font-style: normal; }
+.elbars { display: grid; gap: 6px; }
+.elbar { display: grid; grid-template-columns: 54px minmax(0, 1fr) 24px; gap: 8px; align-items: center; font-size: 13px; }
+.elbar .track { height: 14px; background: var(--sunk); border-radius: 4px; overflow: hidden; }
+.elbar .track i { display: block; height: 100%; }
+.elbar .v { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
+.c0 { background: var(--wood); } .c1 { background: var(--fire); } .c2 { background: var(--earth); } .c3 { background: var(--metal); } .c4 { background: var(--water); }
+.facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.facts div { background: var(--bg); border-radius: 8px; padding: 8px 10px; min-width: 0; }
+.facts dt { font-size: 11.5px; color: var(--muted); font-weight: 700; }
+.facts dd { margin: 0; font-weight: 700; font-size: 14px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 12.5px; padding: 3px 9px; border-radius: 99px; border: 1px solid var(--line); background: var(--bg); cursor: help; }
+.chip small { color: var(--muted); }
+.chip.good { border-color: var(--good); color: var(--good); }
+.chip.love { border-color: var(--love); color: var(--love); }
+.chip.strong, .chip.weak { border-color: var(--bad); color: var(--bad); }
+.dw { display: grid; grid-auto-flow: column; grid-auto-columns: 46px; gap: 4px; }
+.dw > div { display: grid; justify-items: center; font-size: 11px; color: var(--muted); padding: 4px 0; border-radius: 6px; }
+.dw > div.now { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--ink); font-weight: 700; }
+.dw b { font-family: var(--f-han); font-size: 17px; line-height: 1.15; color: var(--ink); }
+.warn { font-size: 12.5px; color: var(--bad); }
+.subh { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .04em; }
+
+/* ---------- 교차표 ---------- */
+.cross { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 10px; }
+table.mx { border-collapse: separate; border-spacing: 4px; min-width: 520px; width: 100%; table-layout: fixed; }
+table.mx th { font-size: 12px; color: var(--muted); font-weight: 700; }
+table.mx th .han { font-size: 16px; color: var(--ink); display: block; }
+table.mx td { background: var(--bg); border-radius: 8px; padding: 6px; vertical-align: top; font-size: 12px; text-align: center; height: 58px; }
+table.mx td.focus { outline: 2px solid var(--accent); outline-offset: -2px; }
+.tag { display: inline-block; padding: 0 6px; border-radius: 4px; font-weight: 700; margin: 1px; }
+.tag.p { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
+.tag.n { background: color-mix(in srgb, var(--bad) 16%, transparent); color: var(--bad); }
+.tag.z { color: var(--muted); font-weight: 400; }
+
+/* ---------- 항목 해설 ---------- */
+.details { display: grid; gap: 12px; }
+article.cat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px; display: grid; gap: 10px; }
+article.cat header { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: baseline; justify-content: space-between; }
+article.cat h3 { font-size: 18px; }
+article.cat h3 small { font-family: var(--f-body); font-weight: 400; color: var(--muted); font-size: 13px; margin-left: 6px; }
+.pill { font-size: 13px; font-weight: 700; padding: 2px 10px; border-radius: 99px; background: var(--sunk); font-variant-numeric: tabular-nums; }
+.pill.hi { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
+.pill.lo { background: color-mix(in srgb, var(--bad) 16%, transparent); color: var(--bad); }
+article.cat p, article.cat li { max-width: 72ch; }
+article.cat .body { display: grid; gap: 8px; }
+.duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.duo > div { background: var(--bg); border-radius: 8px; padding: 12px; display: grid; gap: 4px; font-size: 14px; }
+ul.notes { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+ul.notes li { padding-left: 12px; border-left: 3px solid var(--line); }
+ul.notes li.good { border-color: var(--good); } ul.notes li.love { border-color: var(--love); } ul.notes li.weak { border-color: var(--bad); }
+ul.notes b { margin-right: 6px; }
+
+/* ---------- 연도별 ---------- */
+table.flow { width: 100%; min-width: 560px; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+table.flow th, table.flow td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; font-size: 13.5px; vertical-align: top; }
+table.flow th { font-size: 12px; color: var(--muted); background: var(--bg); }
+table.flow tr:last-child td { border-bottom: 0; }
+table.flow .yr b { font-family: var(--f-han); font-size: 18px; display: block; line-height: 1.2; }
+.mood { font-weight: 700; padding: 2px 10px; border-radius: 99px; white-space: nowrap; }
+.mood.good { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
+.mood.bad { background: color-mix(in srgb, var(--bad) 16%, transparent); color: var(--bad); }
+.mood.mid { background: var(--sunk); }
+.ftag { display: inline-block; font-size: 12px; margin: 1px 4px 1px 0; padding: 0 6px; border-radius: 4px; background: var(--bg); }
+.ftag.good { color: var(--good); } .ftag.bad { color: var(--bad); } .ftag.love { color: var(--love); }
+
+footer { padding-block: 26px 40px; display: grid; gap: 6px; }
+@media (prefers-reduced-motion: no-preference) {
+  .bar .track i, .elbar .track i { transition: width .5s ease; }
+  .dial circle.arc { transition: stroke-dashoffset .8s ease; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="seal" aria-hidden="true">合</div>
+      <div>
+        <h1>사주 궁합 명식</h1>
+        <p>두 사람의 생년월일시로 사주팔자·음양오행·십이운성·신살을 세우고 궁합을 여덟 갈래로 풀어 봅니다.</p>
+      </div>
+    </div>
+  </header>
+
+  <form class="inputs" id="form" novalidate>
+    <div class="people" id="people"></div>
+    <div class="opts">
+      <div class="row">
+        <label class="fld"><span>자시(23:00~01:00) 처리</span>
+          <select id="zasi">
+            <option value="std">23시부터 다음 날 일주 (통자시)</option>
+            <option value="yaja">0시부터 다음 날 (야자시 적용)</option>
+          </select>
+        </label>
+      </div>
+      <button class="btn" type="submit">궁합 보기</button>
+    </div>
+    <p class="err" id="err" role="alert" hidden></p>
+  </form>
+
+  <main id="out" aria-live="polite"></main>
+
+  <footer>
+    <p class="fine">절기 시각은 천문 계산(태양 황경)으로 구하며 수 분 오차가 있을 수 있습니다. 음력은 한국 표준시 기준 천문 계산으로 변환합니다. 출생 시각은 출생지 경도로 지방평균시를 보정하고, 1948~1960년·1987~1988년 서머타임과 1954~1961년 표준시(UTC+8:30)를 반영합니다.</p>
+    <p class="fine">명리 해석은 학파마다 다릅니다. 이 결과는 재미와 자기 이해를 위한 참고 자료로 활용해 주세요. 입력한 정보는 브라우저 안에서만 계산되며 어디에도 전송되지 않습니다.</p>
+  </footer>
+</div>
+
+<script src="engine.js"></script>
+<script src="compat.js"></script>
+<script>
+(function () {
+'use strict';
+const S = window.Saju, C = window.Compat;
+const { STEM_H, STEM_K, BR_H, BR_K, EL, EL_H, BR_EL, stemEl } = S;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const CITIES = [['서울', 126.98], ['인천', 126.70], ['수원', 127.03], ['춘천', 127.73], ['강릉', 128.90], ['대전', 127.38], ['청주', 127.49], ['전주', 127.15], ['광주', 126.85], ['목포', 126.39], ['대구', 128.60], ['포항', 129.36], ['부산', 129.08], ['울산', 129.31], ['창원', 128.68], ['제주', 126.53], ['평양', 125.75], ['보정 안 함', null]];
+const EXAMPLE = [
+  { name: '민준', sex: 'M', cal: 'solar', y: 1992, m: 5, d: 17, time: '08:30', unk: false, city: 0 },
+  { name: '서연', sex: 'F', cal: 'solar', y: 1994, m: 11, d: 8, time: '14:40', unk: false, city: 12 },
+];
+
+function personForm(i, ex) {
+  const p = 'p' + i;
+  return `<fieldset class="person" style="border:1px solid var(--line);margin:0">
+    <h2><span class="han">${i ? '乙' : '甲'}</span> ${i ? '두 번째 사람' : '첫 번째 사람'} <small><span class="example">예시 값</span></small></h2>
+    <div class="row">
+      <label class="fld grow"><span>이름</span><input id="${p}name" type="text" maxlength="12" value="${ex.name}" autocomplete="off"></label>
+      <div class="fld"><span>성별</span><div class="seg" role="radiogroup" aria-label="성별">
+        <label><input type="radio" name="${p}sex" id="${p}sexM" value="M" ${ex.sex === 'M' ? 'checked' : ''}>남</label>
+        <label><input type="radio" name="${p}sex" id="${p}sexF" value="F" ${ex.sex === 'F' ? 'checked' : ''}>여</label>
+      </div></div>
+    </div>
+    <div class="row">
+      <div class="fld"><span>달력</span><div class="seg" role="radiogroup" aria-label="달력">
+        <label><input type="radio" name="${p}cal" id="${p}calS" value="solar" ${ex.cal === 'solar' ? 'checked' : ''}>양력</label>
+        <label><input type="radio" name="${p}cal" id="${p}calL" value="lunar" ${ex.cal === 'lunar' ? 'checked' : ''}>음력</label>
+      </div></div>
+      <label class="chk" id="${p}leapWrap" ${ex.cal === 'lunar' ? '' : 'hidden'}><input type="checkbox" id="${p}leap"> 윤달</label>
+    </div>
+    <div class="row">
+      <label class="fld"><span>년</span><input id="${p}y" type="number" min="1900" max="2099" value="${ex.y}" inputmode="numeric"></label>
+      <label class="fld"><span>월</span><input id="${p}m" type="number" min="1" max="12" value="${ex.m}" inputmode="numeric"></label>
+      <label class="fld"><span>일</span><input id="${p}d" type="number" min="1" max="31" value="${ex.d}" inputmode="numeric"></label>
+    </div>
+    <div class="row">
+      <label class="fld"><span>태어난 시각</span><input id="${p}time" type="time" value="${ex.time}"></label>
+      <label class="chk"><input type="checkbox" id="${p}unk" ${ex.unk ? 'checked' : ''}> 시간 모름</label>
+      <label class="fld grow"><span>출생지 (경도 보정)</span><select id="${p}city">${CITIES.map((c, k) => `<option value="${k}" ${k === ex.city ? 'selected' : ''}>${c[0]}${c[1] ? ` (${c[1].toFixed(1)}°E)` : ''}</option>`).join('')}</select></label>
+    </div>
+  </fieldset>`;
+}
+$('people').innerHTML = EXAMPLE.map((ex, i) => personForm(i, ex)).join('');
+for (const i of [0, 1]) {
+  const p = 'p' + i;
+  document.querySelectorAll(`input[name=${p}cal]`).forEach(r => r.addEventListener('change', () => { $(p + 'leapWrap').hidden = !$(p + 'calL').checked; }));
+  $(p + 'unk').addEventListener('change', () => { $(p + 'time').disabled = $(p + 'unk').checked; });
+}
+$('people').addEventListener('input', () => document.querySelectorAll('.example').forEach(e => e.remove()), { once: true });
+
+function readPerson(i) {
+  const p = 'p' + i;
+  const num = id => parseInt($(p + id).value, 10);
+  const name = $(p + 'name').value.trim() || (i ? '을' : '갑');
+  const y = num('y'), m = num('m'), d = num('d');
+  if (!(y >= 1900 && y <= 2099)) throw new Error(`${name}님의 출생 연도를 1900~2099 사이로 입력해 주세요.`);
+  if (!(m >= 1 && m <= 12)) throw new Error(`${name}님의 출생 월을 1~12 사이로 입력해 주세요.`);
+  if (!(d >= 1 && d <= 31)) throw new Error(`${name}님의 출생 일을 1~31 사이로 입력해 주세요.`);
+  const unk = $(p + 'unk').checked;
+  let h = 12, mi = 0;
+  if (!unk) {
+    const t = $(p + 'time').value;
+    if (!/^\d{2}:\d{2}/.test(t)) throw new Error(`${name}님의 태어난 시각을 입력하거나 '시간 모름'을 체크해 주세요.`);
+    [h, mi] = t.split(':').map(Number);
+  }
+  const city = CITIES[+$(p + 'city').value];
+  return { name, sex: $(p + 'sexF').checked ? 'F' : 'M', cal: $(p + 'calL').checked ? 'lunar' : 'solar', leap: $(p + 'leap').checked, y, m, d, hasTime: !unk, h, mi, lon: city[1], city: city[0] };
+}
+
+/* ---------- 렌더링 ---------- */
+const tile = (ch, kr, e, yy) => `<div class="tile e${e}"><b>${ch}</b><span>${kr}·${yy ? '양' : '음'}${EL[e]}</span></div>`;
+const KEYS = ['hour', 'day', 'month', 'year'];
+const KNAME = { hour: '시주', day: '일주', month: '월주', year: '년주' };
+const pad = n => String(n).padStart(2, '0');
+
+function chartHTML(c, other) {
+  const inp = c.input, P = c.P;
+  const sol = `양력 ${c.solar.y}.${pad(c.solar.m)}.${pad(c.solar.d)}`;
+  const lun = `음력 ${c.lunar.y}.${pad(c.lunar.m)}.${pad(c.lunar.d)}${c.lunar.leap ? '(윤)' : ''}`;
+  const time = inp.hasTime ? `${pad(inp.h)}:${pad(inp.mi)} 출생${inp.lon != null ? ` · 보정 ${pad(c.lmt.h)}:${pad(c.lmt.mi)}` : ''}` : '시간 모름';
+  const row = (label, f, cls = '') => `<tr><th class="rh" scope="row">${label}</th>${KEYS.map(k => `<td class="${cls} ${k === 'day' ? 'day-col' : ''}">${P[k] ? f(P[k], c.cols[k], k) : '<span class="fine">—</span>'}</td>`).join('')}</tr>`;
+  const table = `<div class="scroll"><table class="pillars">
+    <thead><tr><th class="rh"></th>${KEYS.map(k => `<th scope="col">${KNAME[k]}</th>`).join('')}</tr></thead>
+    <tbody>
+    ${row('십성', (p, x) => x.stemTG, 'tg')}
+    <tr><th class="rh" scope="row">천간</th>${KEYS.map(k => `<td class="${k === 'day' ? 'day-col' : ''}">${P[k] ? tile(STEM_H[P[k].s], STEM_K[P[k].s], stemEl(P[k].s), P[k].s % 2 === 0) : '<div class="tile none"><b>?</b><span>모름</span></div>'}</td>`).join('')}</tr>
+    <tr><th class="rh" scope="row">지지</th>${KEYS.map(k => `<td class="${k === 'day' ? 'day-col' : ''}">${P[k] ? tile(BR_H[P[k].b], BR_K[P[k].b], BR_EL[P[k].b], P[k].b % 2 === 0) : '<div class="tile none"><b>?</b><span>모름</span></div>'}</td>`).join('')}</tr>
+    ${row('십성', (p, x) => x.brTG, 'tg')}
+    ${row('지장간', (p, x) => `<span class="hid">${x.hidden.map(s => `<i title="${STEM_K[s]}">${STEM_H[s]}</i>`).join('')}</span>`)}
+    ${row('운성', (p, x) => x.stage)}
+    ${row('신살', (p, x) => x.sinsal)}
+    </tbody></table></div>`;
+  const max = Math.max(4, ...c.count);
+  const elbars = `<div class="elbars" role="img" aria-label="오행 분포 ${c.count.map((v, e) => EL[e] + v).join(', ')}">${c.count.map((v, e) => `<div class="elbar"><span><span class="han">${EL_H[e]}</span> ${EL[e]}</span><div class="track"><i class="c${e}" style="width:${v / max * 100}%"></i></div><span class="v">${v}</span></div>`).join('')}</div>`;
+  const dw = c.daewoon;
+  const age = new Date().getFullYear() - c.solar.y;
+  const dwHTML = `<div class="scroll"><div class="dw">${dw.list.map(x => `<div class="${age >= x.age && age < x.age + 10 ? 'now' : ''}"><b>${STEM_H[x.s]}</b><b>${BR_H[x.b]}</b><span>${x.age}세</span></div>`).join('')}</div></div>`;
+  const ss = c.sinsal.length ? `<div class="chips">${c.sinsal.map(s => `<span class="chip ${s.kind}" title="${esc(C.SINSAL_MEANING[s.name] || '')}">${s.name} <small>${s.where.length > 2 ? s.where.length + '곳' : s.where.join(', ')}</small></span>`).join('')}</div>` : '<p class="fine">두드러진 신살이 없습니다.</p>';
+  const ssList = c.sinsal.filter(s => C.SINSAL_MEANING[s.name]).map(s => `<li><b>${s.name}</b> ${C.SINSAL_MEANING[s.name]}</li>`).join('');
+  return `<div class="chart">
+    <div class="head">
+      <h3>${esc(inp.name)} <span class="fine" style="font-family:var(--f-body)">${inp.sex === 'F' ? '여' : '남'} · ${S.ANIMAL[P.year.b]}띠</span></h3>
+      <div class="meta">${inp.cal === 'lunar' ? `${lun} → ${sol}` : `${sol} (${lun})`} · ${time}${inp.city && inp.lon != null ? ` · ${inp.city}` : ''}</div>
+      <div class="meta">절입 ${c.terms.prev.name} ${c.terms.prev.at.replace(/^\d+년 /, '')} ~ ${c.terms.next.name} ${c.terms.next.at.replace(/^\d+년 /, '')}</div>
+      ${c.warnings.map(w => `<div class="warn">${w}</div>`).join('')}
+    </div>
+    ${table}
+    <div class="subh">오행 분포 (${c.total}자)</div>
+    ${elbars}
+    <dl class="facts" style="margin:0">
+      <div><dt>일간</dt><dd>${STEM_K[c.ds]}${EL[c.dEl]} (${STEM_H[c.ds]}${EL_H[c.dEl]})</dd></div>
+      <div><dt>음양</dt><dd>양 ${c.yang} · 음 ${c.yin}</dd></div>
+      <div><dt>신강·신약</dt><dd>${c.strength} <span class="fine">${Math.round(c.ratio * 100)}%</span></dd></div>
+      <div><dt>용신 · 희신</dt><dd>${EL[c.yong]}(${EL_H[c.yong]}) · ${EL[c.hee]}(${EL_H[c.hee]})${c.johu !== null && c.johu !== c.yong ? ` <span class="fine">조후 ${EL[c.johu]}</span>` : ''}</dd></div>
+      <div><dt>기신</dt><dd>${EL[c.gi]}(${EL_H[c.gi]})</dd></div>
+      <div><dt>공망</dt><dd>${c.gongmang.map(b => BR_K[b] + BR_H[b]).join(' ')}</dd></div>
+    </dl>
+    <div class="subh">신살</div>
+    ${ss}
+    ${ssList ? `<details><summary class="fine" style="cursor:pointer">신살 풀이 보기</summary><ul class="notes" style="margin-top:8px;font-size:13.5px">${ssList}</ul></details>` : ''}
+    <div class="subh">대운 (${dw.forward ? '순행' : '역행'} · ${dw.start}세 시작)</div>
+    ${dwHTML}
+  </div>`;
+}
+
+function dialSVG(score) {
+  const r = 70, c = 2 * Math.PI * r;
+  return `<svg viewBox="0 0 180 180" role="img" aria-label="궁합 점수 ${score}점">
+    <circle cx="90" cy="90" r="${r}" fill="none" stroke="var(--sunk)" stroke-width="14"></circle>
+    <circle class="arc" cx="90" cy="90" r="${r}" fill="none" stroke="var(--accent)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - score / 100)}" transform="rotate(-90 90 90)"></circle>
+    <text x="90" y="98" text-anchor="middle" fill="var(--ink)" style="font: 900 48px var(--f-han)">${score}</text>
+    <text x="90" y="124" text-anchor="middle" fill="var(--muted)" style="font: 500 13px var(--f-body)">/ 100</text>
+  </svg>`;
+}
+
+function crossHTML(A, B, R) {
+  const head = KEYS.map(k => `<th scope="col">${esc(B.input.name)} ${KNAME[k]}<span class="han">${B.P[k] ? S.pillarH(B.P[k]) : '—'}</span></th>`).join('');
+  const body = KEYS.map((ka, i) => `<tr><th scope="row">${esc(A.input.name)} ${KNAME[ka]}<span class="han">${A.P[ka] ? S.pillarH(A.P[ka]) : '—'}</span></th>${KEYS.map((kb, jx) => {
+    const m = R.matrix[i][jx];
+    if (!m) return '<td><span class="tag z">—</span></td>';
+    const st = m.st.t === '합' ? `<span class="tag p">간합</span>` : m.st.t === '충' ? `<span class="tag n">간충</span>` : '';
+    const br = m.br.filter(r => r.t !== '동일').map(r => `<span class="tag ${r.v > 0 ? 'p' : 'n'}">${r.t}</span>`).join('');
+    return `<td class="${ka === 'day' && kb === 'day' ? 'focus' : ''}">${st + br || '<span class="tag z">무난</span>'}</td>`;
+  }).join('')}</tr>`).join('');
+  return `<div class="cross"><p class="fine">두 사람의 네 기둥을 모두 맞대어 본 표입니다. 위 칸은 천간, 아래는 지지의 작용이며 테두리 칸이 핵심인 일주끼리의 관계입니다. 합 ${R.hap}개, 충 ${R.chung}개가 작용합니다.</p>
+    <div class="scroll"><table class="mx"><thead><tr><th></th>${head}</tr></thead><tbody>${body}</tbody></table></div></div>`;
+}
+
+function flowHTML(A, B) {
+  const now = new Date().getFullYear();
+  const F = C.yearFlow(A, B, now, 6);
+  const tags = t => t.tags.length ? t.tags.map(x => `<span class="ftag ${x.k}">${x.t}</span>`).join('') : '<span class="fine">무난</span>';
+  return `<div class="scroll"><table class="flow"><thead><tr><th>해</th><th>${esc(A.input.name)}님</th><th>${esc(B.input.name)}님</th><th>두 사람</th></tr></thead><tbody>
+    ${F.map(f => `<tr><td class="yr"><b>${STEM_H[f.ys]}${BR_H[f.yb]}</b>${f.Y} ${STEM_K[f.ys]}${BR_K[f.yb]}년</td><td>${tags(f.per[0])}<div class="fine">세운 천간이 ${f.per[0].tg}</div></td><td>${tags(f.per[1])}<div class="fine">세운 천간이 ${f.per[1].tg}</div></td><td><span class="mood ${f.mood[1]}">${f.mood[0]}</span></td></tr>`).join('')}
+  </tbody></table></div>
+  <p class="fine">해마다 들어오는 세운(歲運)의 지지가 각자의 배우자궁과 합·충하는지, 천간이 용신·배우자성에 해당하는지로 관계의 흐름을 봅니다. '배우자성의 해'는 연애·결혼 같은 관계 이슈가 부각되기 쉬운 해입니다.</p>`;
+}
+
+function render() {
+  const err = $('err');
+  err.hidden = true;
+  let A, B;
+  try {
+    const opts = { zasi: $('zasi').value };
+    A = S.computeChart(readPerson(0), opts);
+    B = S.computeChart(readPerson(1), opts);
+  } catch (e) { err.textContent = e.message; err.hidden = false; return false; }
+  const R = C.compat(A, B);
+  const nA = esc(A.input.name), nB = esc(B.input.name);
+  const cls = s => (s >= 75 ? 'hi' : s < 55 ? 'lo' : '');
+  const bars = R.cats.map(c => `<div class="bar"><span class="nm"><b>${c.name}</b><small>${c.sub} · ${c.w}%</small></span><div class="track"><i class="${cls(c.score)}" style="width:${c.score}%"></i></div><span class="v">${c.score}</span></div>`).join('');
+  $('out').innerHTML = `
+  <section class="block" id="verdict">
+    <h2>총평 <small>${nA}님 × ${nB}님</small></h2>
+    <div class="verdict">
+      <div class="dial">${dialSVG(R.total)}<div class="grade">${R.grade}</div><div class="who">일주 ${S.pillarK(A.P.day)} × ${S.pillarK(B.P.day)}</div></div>
+      <div class="bars">${bars}</div>
+    </div>
+    <div class="summary">
+      <div class="k-good"><h3>잘 맞는 점</h3><ul>${R.strengths.length ? R.strengths.map(c => `<li><b>${c.name}</b> ${c.label} (${c.score}점)</li>`).join('') : '<li>두드러지게 높은 항목은 없지만 고르게 무난합니다.</li>'}</ul></div>
+      <div class="k-bad"><h3>조심할 점</h3><ul>${R.cautions.length ? R.cautions.map(c => `<li><b>${c.name}</b> ${c.label} (${c.score}점)</li>`).join('') : '<li>크게 부딪히는 항목이 없습니다.</li>'}</ul></div>
+      <div><h3>관계 처방</h3><ul>${R.advice.map(a => `<li>${a}</li>`).join('')}</ul></div>
+    </div>
+  </section>
+  <section class="block">
+    <h2>두 사람의 명식 <small>시주 · 일주 · 월주 · 년주</small></h2>
+    <div class="charts">${chartHTML(A, B)}${chartHTML(B, A)}</div>
+  </section>
+  <section class="block">
+    <h2>기둥 교차표 <small>천간합·충 / 지지 합·충·형·파·해·원진</small></h2>
+    ${crossHTML(A, B, R)}
+  </section>
+  <section class="block">
+    <h2>항목별 풀이</h2>
+    <div class="details">${R.cats.map(c => `<article class="cat"><header><h3>${c.name}<small>${c.sub} · 비중 ${c.w}%</small></h3><span class="pill ${cls(c.score)}">${c.label} · ${c.score}점</span></header><div class="body">${c.html}</div></article>`).join('')}</div>
+  </section>
+  <section class="block">
+    <h2>연도별 관계 흐름</h2>
+    ${flowHTML(A, B)}
+  </section>`;
+  return true;
+}
+
+$('form').addEventListener('submit', e => {
+  e.preventDefault();
+  if (render()) $('verdict').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+});
+render();
+})();
+</script>
+</body>
+</html>
