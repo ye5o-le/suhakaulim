@@ -100,7 +100,7 @@ section.block > h2 small { font-family: var(--f-body); font-weight: 400; font-si
 .dial .grade { font-family: var(--f-han); font-weight: 900; font-size: 22px; }
 .dial .who { font-size: 13px; color: var(--muted); }
 .bars { display: grid; gap: 9px; min-width: 0; }
-.bar { display: grid; grid-template-columns: 112px minmax(0, 1fr) 42px; gap: 10px; align-items: center; font-size: 14px; }
+.bar { display: grid; grid-template-columns: 150px minmax(0, 1fr) 36px; gap: 10px; align-items: center; font-size: 14px; }
 .bar .nm b { display: block; font-weight: 700; line-height: 1.2; }
 .bar .nm small { color: var(--muted); font-size: 11.5px; }
 .bar .track { height: 10px; background: var(--sunk); border-radius: 99px; overflow: hidden; }
@@ -197,7 +197,7 @@ table.flow { width: 100%; min-width: 560px; border-collapse: collapse; backgroun
 table.flow th, table.flow td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; font-size: 13.5px; vertical-align: top; }
 table.flow th { font-size: 12px; color: var(--muted); background: var(--bg); }
 table.flow tr:last-child td { border-bottom: 0; }
-table.flow .yr b { font-family: var(--f-han); font-size: 18px; display: block; line-height: 1.2; }
+table.flow .yr b { font-size: 17px; display: block; line-height: 1.2; font-variant-numeric: tabular-nums; }
 .mood { font-weight: 700; padding: 2px 10px; border-radius: 99px; white-space: nowrap; }
 .mood.good { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
 .mood.bad { background: color-mix(in srgb, var(--bad) 16%, transparent); color: var(--bad); }
@@ -206,6 +206,19 @@ table.flow .yr b { font-family: var(--f-han); font-size: 18px; display: block; l
 .ftag.good { color: var(--good); } .ftag.bad { color: var(--bad); } .ftag.love { color: var(--love); }
 
 footer { padding-block: 26px 40px; display: grid; gap: 6px; }
+.story { display: grid; gap: 16px; min-width: 0; }
+.story > p { font-size: 17px; line-height: 1.7; font-weight: 500; max-width: 60ch; }
+.term { font-size: 12px; color: var(--muted); }
+.profile { display: grid; gap: 8px; }
+.profile .lead { font-size: 15px; }
+.profile ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 14px; }
+.profile li b { display: inline-block; min-width: 76px; color: var(--accent); margin-right: 4px; }
+ul.stars { font-size: 14px; }
+details.pro { display: grid; gap: 12px; }
+details.pro > summary { cursor: pointer; font-weight: 700; color: var(--accent); font-size: 14px; padding: 6px 0; }
+details.pro[open] > summary { margin-bottom: 10px; }
+details.pro > * + * { margin-top: 12px; }
+.duo strong { color: var(--accent); }
 @media (prefers-reduced-motion: no-preference) {
   .bar .track i, .elbar .track i { transition: width .5s ease; }
   .dial circle.arc { transition: stroke-dashoffset .8s ease; }
@@ -219,7 +232,7 @@ footer { padding-block: 26px 40px; display: grid; gap: 6px; }
       <div class="seal" aria-hidden="true">合</div>
       <div>
         <h1>사주 궁합 명식</h1>
-        <p>두 사람의 생년월일시로 사주팔자·음양오행·십이운성·신살을 세우고 궁합을 여덟 갈래로 풀어 봅니다.</p>
+        <p>두 사람의 생일과 태어난 시각만 넣으면, 사주로 본 궁합을 누구나 알기 쉬운 말로 풀어 드려요.</p>
       </div>
     </div>
   </header>
@@ -227,14 +240,7 @@ footer { padding-block: 26px 40px; display: grid; gap: 6px; }
   <form class="inputs" id="form" novalidate>
     <div class="people" id="people"></div>
     <div class="opts">
-      <div class="row">
-        <label class="fld"><span>자시(23:00~01:00) 처리</span>
-          <select id="zasi">
-            <option value="std">23시부터 다음 날 일주 (통자시)</option>
-            <option value="yaja">0시부터 다음 날 (야자시 적용)</option>
-          </select>
-        </label>
-      </div>
+      <p class="fine">태어난 시각을 모르면 '시간 모름'을 체크하세요. 시간 없이도 궁합을 볼 수 있어요.</p>
       <button class="btn" type="submit">궁합 보기</button>
     </div>
     <p class="err" id="err" role="alert" hidden></p>
@@ -243,8 +249,8 @@ footer { padding-block: 26px 40px; display: grid; gap: 6px; }
   <main id="out" aria-live="polite"></main>
 
   <footer>
-    <p class="fine">절기 시각은 천문 계산(태양 황경)으로 구하며 수 분 오차가 있을 수 있습니다. 음력은 한국 표준시 기준 천문 계산으로 변환합니다. 출생 시각은 출생지 경도로 지방평균시를 보정하고, 1948~1960년·1987~1988년 서머타임과 1954~1961년 표준시(UTC+8:30)를 반영합니다.</p>
-    <p class="fine">명리 해석은 학파마다 다릅니다. 이 결과는 재미와 자기 이해를 위한 참고 자료로 활용해 주세요. 입력한 정보는 브라우저 안에서만 계산되며 어디에도 전송되지 않습니다.</p>
+    <p class="fine">태어난 시각은 입력한 시각(한국 표준시) 그대로 계산하고, 밤 11시 이후 출생은 다음 날로 봐요(통자시). 예전 서머타임 기간(1948~1960년, 1987~1988년) 출생은 1시간을 빼서 계산해요. 음력·절기는 천문 계산으로 변환해요.</p>
+    <p class="fine">명리 해석은 학파마다 다릅니다. 이 결과는 재미와 서로를 이해하는 참고 자료로 활용해 주세요. 입력한 정보는 이 화면 안에서만 계산되고 어디에도 전송되지 않아요.</p>
   </footer>
 </div>
 
@@ -258,10 +264,9 @@ const { STEM_H, STEM_K, BR_H, BR_K, EL, EL_H, BR_EL, stemEl } = S;
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-const CITIES = [['서울', 126.98], ['인천', 126.70], ['수원', 127.03], ['춘천', 127.73], ['강릉', 128.90], ['대전', 127.38], ['청주', 127.49], ['전주', 127.15], ['광주', 126.85], ['목포', 126.39], ['대구', 128.60], ['포항', 129.36], ['부산', 129.08], ['울산', 129.31], ['창원', 128.68], ['제주', 126.53], ['평양', 125.75], ['보정 안 함', null]];
 const EXAMPLE = [
-  { name: '민준', sex: 'M', cal: 'solar', y: 1992, m: 5, d: 17, time: '08:30', unk: false, city: 0 },
-  { name: '서연', sex: 'F', cal: 'solar', y: 1994, m: 11, d: 8, time: '14:40', unk: false, city: 12 },
+  { name: '민준', sex: 'M', cal: 'solar', y: 1992, m: 5, d: 17, time: '08:30', unk: false },
+  { name: '서연', sex: 'F', cal: 'solar', y: 1994, m: 11, d: 8, time: '14:40', unk: false },
 ];
 
 function personForm(i, ex) {
@@ -290,7 +295,6 @@ function personForm(i, ex) {
     <div class="row">
       <label class="fld"><span>태어난 시각</span><input id="${p}time" type="time" value="${ex.time}"></label>
       <label class="chk"><input type="checkbox" id="${p}unk" ${ex.unk ? 'checked' : ''}> 시간 모름</label>
-      <label class="fld grow"><span>출생지 (경도 보정)</span><select id="${p}city">${CITIES.map((c, k) => `<option value="${k}" ${k === ex.city ? 'selected' : ''}>${c[0]}${c[1] ? ` (${c[1].toFixed(1)}°E)` : ''}</option>`).join('')}</select></label>
     </div>
   </fieldset>`;
 }
@@ -317,8 +321,7 @@ function readPerson(i) {
     if (!/^\d{2}:\d{2}/.test(t)) throw new Error(`${name}님의 태어난 시각을 입력하거나 '시간 모름'을 체크해 주세요.`);
     [h, mi] = t.split(':').map(Number);
   }
-  const city = CITIES[+$(p + 'city').value];
-  return { name, sex: $(p + 'sexF').checked ? 'F' : 'M', cal: $(p + 'calL').checked ? 'lunar' : 'solar', leap: $(p + 'leap').checked, y, m, d, hasTime: !unk, h, mi, lon: city[1], city: city[0] };
+  return { name, sex: $(p + 'sexF').checked ? 'F' : 'M', cal: $(p + 'calL').checked ? 'lunar' : 'solar', leap: $(p + 'leap').checked, y, m, d, hasTime: !unk, h, mi, lon: null };
 }
 
 /* ---------- 렌더링 ---------- */
@@ -329,9 +332,10 @@ const pad = n => String(n).padStart(2, '0');
 
 function chartHTML(c, other) {
   const inp = c.input, P = c.P;
+  const pr = C.personProfile(c);
   const sol = `양력 ${c.solar.y}.${pad(c.solar.m)}.${pad(c.solar.d)}`;
   const lun = `음력 ${c.lunar.y}.${pad(c.lunar.m)}.${pad(c.lunar.d)}${c.lunar.leap ? '(윤)' : ''}`;
-  const time = inp.hasTime ? `${pad(inp.h)}:${pad(inp.mi)} 출생${inp.lon != null ? ` · 보정 ${pad(c.lmt.h)}:${pad(c.lmt.mi)}` : ''}` : '시간 모름';
+  const time = inp.hasTime ? `${pad(inp.h)}:${pad(inp.mi)} 출생` : '태어난 시각 모름';
   const row = (label, f, cls = '') => `<tr><th class="rh" scope="row">${label}</th>${KEYS.map(k => `<td class="${cls} ${k === 'day' ? 'day-col' : ''}">${P[k] ? f(P[k], c.cols[k], k) : '<span class="fine">—</span>'}</td>`).join('')}</tr>`;
   const table = `<div class="scroll"><table class="pillars">
     <thead><tr><th class="rh"></th>${KEYS.map(k => `<th scope="col">${KNAME[k]}</th>`).join('')}</tr></thead>
@@ -349,31 +353,42 @@ function chartHTML(c, other) {
   const dw = c.daewoon;
   const age = new Date().getFullYear() - c.solar.y;
   const dwHTML = `<div class="scroll"><div class="dw">${dw.list.map(x => `<div class="${age >= x.age && age < x.age + 10 ? 'now' : ''}"><b>${STEM_H[x.s]}</b><b>${BR_H[x.b]}</b><span>${x.age}세</span></div>`).join('')}</div></div>`;
-  const ss = c.sinsal.length ? `<div class="chips">${c.sinsal.map(s => `<span class="chip ${s.kind}" title="${esc(C.SINSAL_MEANING[s.name] || '')}">${s.name} <small>${s.where.length > 2 ? s.where.length + '곳' : s.where.join(', ')}</small></span>`).join('')}</div>` : '<p class="fine">두드러진 신살이 없습니다.</p>';
-  const ssList = c.sinsal.filter(s => C.SINSAL_MEANING[s.name]).map(s => `<li><b>${s.name}</b> ${C.SINSAL_MEANING[s.name]}</li>`).join('');
+  const ss = c.sinsal.length ? `<ul class="notes stars">${c.sinsal.map(s => `<li class="${s.kind === 'good' ? 'good' : s.kind === 'love' ? 'love' : s.kind === 'weak' || s.kind === 'strong' ? 'weak' : ''}"><b>${s.name}</b> ${C.SINSAL_MEANING[s.name] || ''}</li>`).join('')}</ul>` : '<p class="fine">특별히 두드러진 별이 없어요.</p>';
   return `<div class="chart">
     <div class="head">
       <h3>${esc(inp.name)} <span class="fine" style="font-family:var(--f-body)">${inp.sex === 'F' ? '여' : '남'} · ${S.ANIMAL[P.year.b]}띠</span></h3>
-      <div class="meta">${inp.cal === 'lunar' ? `${lun} → ${sol}` : `${sol} (${lun})`} · ${time}${inp.city && inp.lon != null ? ` · ${inp.city}` : ''}</div>
-      <div class="meta">절입 ${c.terms.prev.name} ${c.terms.prev.at.replace(/^\d+년 /, '')} ~ ${c.terms.next.name} ${c.terms.next.at.replace(/^\d+년 /, '')}</div>
+      <div class="meta">${inp.cal === 'lunar' ? `${lun} → ${sol}` : `${sol} (${lun})`} · ${time}</div>
       ${c.warnings.map(w => `<div class="warn">${w}</div>`).join('')}
     </div>
-    ${table}
-    <div class="subh">오행 분포 (${c.total}자)</div>
+    <div class="profile">
+      <p class="lead">${esc(inp.name)}님은 ${pr.nature}</p>
+      <ul>
+        <li><b>기운의 세기</b> ${pr.strength}</li>
+        ${pr.many.map(t => `<li><b>많은 기운</b> ${t}</li>`).join('')}
+        ${pr.none.map(t => `<li><b>없는 기운</b> ${t}</li>`).join('')}
+        <li><b>행운의 기운</b> ${pr.luck.name} · 행운의 색은 ${pr.luck.color}, ${pr.luck.act}가 도움이 돼요.</li>
+      </ul>
+    </div>
+    <div class="subh">다섯 기운의 양 (${c.total}글자 중)</div>
     ${elbars}
-    <dl class="facts" style="margin:0">
-      <div><dt>일간</dt><dd>${STEM_K[c.ds]}${EL[c.dEl]} (${STEM_H[c.ds]}${EL_H[c.dEl]})</dd></div>
-      <div><dt>음양</dt><dd>양 ${c.yang} · 음 ${c.yin}</dd></div>
-      <div><dt>신강·신약</dt><dd>${c.strength} <span class="fine">${Math.round(c.ratio * 100)}%</span></dd></div>
-      <div><dt>용신 · 희신</dt><dd>${EL[c.yong]}(${EL_H[c.yong]}) · ${EL[c.hee]}(${EL_H[c.hee]})${c.johu !== null && c.johu !== c.yong ? ` <span class="fine">조후 ${EL[c.johu]}</span>` : ''}</dd></div>
-      <div><dt>기신</dt><dd>${EL[c.gi]}(${EL_H[c.gi]})</dd></div>
-      <div><dt>공망</dt><dd>${c.gongmang.map(b => BR_K[b] + BR_H[b]).join(' ')}</dd></div>
-    </dl>
-    <div class="subh">신살</div>
+    <div class="subh">타고난 별</div>
     ${ss}
-    ${ssList ? `<details><summary class="fine" style="cursor:pointer">신살 풀이 보기</summary><ul class="notes" style="margin-top:8px;font-size:13.5px">${ssList}</ul></details>` : ''}
-    <div class="subh">대운 (${dw.forward ? '순행' : '역행'} · ${dw.start}세 시작)</div>
+    <details class="pro">
+      <summary>사주 원국표 자세히 보기</summary>
+      <p class="fine">네 기둥은 태어난 시·일·월·년을 뜻해요. 위 글자(천간)와 아래 글자(지지)의 색은 다섯 기운이에요: 초록 나무, 빨강 불, 노랑 흙, 회색 쇠, 남색 물. 강조된 일주의 위 글자가 '나 자신'이에요.</p>
+      ${table}
+      <dl class="facts" style="margin:0">
+        <div><dt>나를 뜻하는 글자 (일간)</dt><dd>${STEM_K[c.ds]}${EL[c.dEl]} (${STEM_H[c.ds]}${EL_H[c.dEl]})</dd></div>
+        <div><dt>음양</dt><dd>양 ${c.yang} · 음 ${c.yin}</dd></div>
+        <div><dt>기운의 세기</dt><dd>${c.strength} <span class="fine">${Math.round(c.ratio * 100)}%</span></dd></div>
+        <div><dt>도움 되는 기운 (용신·희신)</dt><dd>${EL[c.yong]}(${EL_H[c.yong]}) · ${EL[c.hee]}(${EL_H[c.hee]})</dd></div>
+        <div><dt>부담 되는 기운 (기신)</dt><dd>${EL[c.gi]}(${EL_H[c.gi]})</dd></div>
+        <div><dt>공망</dt><dd>${c.gongmang.map(b => BR_K[b] + BR_H[b]).join(' ')}</dd></div>
+      </dl>
+      <p class="fine">절기 기준 ${c.terms.prev.name} ${c.terms.prev.at} ~ ${c.terms.next.name} ${c.terms.next.at}</p>
+      <div class="subh">10년마다 바뀌는 운의 흐름 (대운 · ${dw.start}세 시작)</div>
     ${dwHTML}
+    </details>
   </div>`;
 }
 
@@ -396,7 +411,7 @@ function crossHTML(A, B, R) {
     const br = m.br.filter(r => r.t !== '동일').map(r => `<span class="tag ${r.v > 0 ? 'p' : 'n'}">${r.t}</span>`).join('');
     return `<td class="${ka === 'day' && kb === 'day' ? 'focus' : ''}">${st + br || '<span class="tag z">무난</span>'}</td>`;
   }).join('')}</tr>`).join('');
-  return `<div class="cross"><p class="fine">두 사람의 네 기둥을 모두 맞대어 본 표입니다. 위 칸은 천간, 아래는 지지의 작용이며 테두리 칸이 핵심인 일주끼리의 관계입니다. 합 ${R.hap}개, 충 ${R.chung}개가 작용합니다.</p>
+  return `<div class="cross"><p class="fine">두 사람의 네 기둥을 모두 맞대어 본 표예요. 초록은 서로 끌어당기는 작용(합), 빨강은 부딪히는 작용(충·형·파·해·원진)이고, 테두리 칸이 가장 중요한 일주끼리의 관계예요. 합 ${R.hap}개, 충 ${R.chung}개가 작용해요.</p>
     <div class="scroll"><table class="mx"><thead><tr><th></th>${head}</tr></thead><tbody>${body}</tbody></table></div></div>`;
 }
 
@@ -404,10 +419,10 @@ function flowHTML(A, B) {
   const now = new Date().getFullYear();
   const F = C.yearFlow(A, B, now, 6);
   const tags = t => t.tags.length ? t.tags.map(x => `<span class="ftag ${x.k}">${x.t}</span>`).join('') : '<span class="fine">무난</span>';
-  return `<div class="scroll"><table class="flow"><thead><tr><th>해</th><th>${esc(A.input.name)}님</th><th>${esc(B.input.name)}님</th><th>두 사람</th></tr></thead><tbody>
-    ${F.map(f => `<tr><td class="yr"><b>${STEM_H[f.ys]}${BR_H[f.yb]}</b>${f.Y} ${STEM_K[f.ys]}${BR_K[f.yb]}년</td><td>${tags(f.per[0])}<div class="fine">세운 천간이 ${f.per[0].tg}</div></td><td>${tags(f.per[1])}<div class="fine">세운 천간이 ${f.per[1].tg}</div></td><td><span class="mood ${f.mood[1]}">${f.mood[0]}</span></td></tr>`).join('')}
+  return `<div class="scroll"><table class="flow"><thead><tr><th>해</th><th>두 사람에게는</th><th>${esc(A.input.name)}님</th><th>${esc(B.input.name)}님</th></tr></thead><tbody>
+    ${F.map(f => `<tr><td class="yr"><b>${f.Y}</b>${S.ANIMAL[f.yb]}띠 해</td><td><span class="mood ${f.mood[1]}">${f.mood[0]}</span><div class="fine" style="margin-top:4px">${f.mood[2]}</div></td><td>${tags(f.per[0])}</td><td>${tags(f.per[1])}</td></tr>`).join('')}
   </tbody></table></div>
-  <p class="fine">해마다 들어오는 세운(歲運)의 지지가 각자의 배우자궁과 합·충하는지, 천간이 용신·배우자성에 해당하는지로 관계의 흐름을 봅니다. '배우자성의 해'는 연애·결혼 같은 관계 이슈가 부각되기 쉬운 해입니다.</p>`;
+  <p class="fine">해마다 들어오는 기운이 각자의 사주와 어떻게 어울리는지 보고 관계의 흐름을 짚어 봤어요.</p>`;
 }
 
 function render() {
@@ -415,42 +430,47 @@ function render() {
   err.hidden = true;
   let A, B;
   try {
-    const opts = { zasi: $('zasi').value };
+    const opts = { zasi: 'std' };
     A = S.computeChart(readPerson(0), opts);
     B = S.computeChart(readPerson(1), opts);
   } catch (e) { err.textContent = e.message; err.hidden = false; return false; }
   const R = C.compat(A, B);
   const nA = esc(A.input.name), nB = esc(B.input.name);
   const cls = s => (s >= 75 ? 'hi' : s < 55 ? 'lo' : '');
-  const bars = R.cats.map(c => `<div class="bar"><span class="nm"><b>${c.name}</b><small>${c.sub} · ${c.w}%</small></span><div class="track"><i class="${cls(c.score)}" style="width:${c.score}%"></i></div><span class="v">${c.score}</span></div>`).join('');
+  const bars = R.cats.map(c => `<div class="bar"><span class="nm"><b>${c.name}</b><small>${c.label}</small></span><div class="track"><i class="${cls(c.score)}" style="width:${c.score}%"></i></div><span class="v">${c.score}</span></div>`).join('');
   $('out').innerHTML = `
   <section class="block" id="verdict">
-    <h2>총평 <small>${nA}님 × ${nB}님</small></h2>
+    <h2>궁합 결과 <small>${nA}님 × ${nB}님</small></h2>
     <div class="verdict">
-      <div class="dial">${dialSVG(R.total)}<div class="grade">${R.grade}</div><div class="who">일주 ${S.pillarK(A.P.day)} × ${S.pillarK(B.P.day)}</div></div>
-      <div class="bars">${bars}</div>
+      <div class="dial">${dialSVG(R.total)}<div class="grade">${R.grade}</div></div>
+      <div class="story">
+        <p>${R.story}</p>
+        <div class="bars">${bars}</div>
+      </div>
     </div>
     <div class="summary">
-      <div class="k-good"><h3>잘 맞는 점</h3><ul>${R.strengths.length ? R.strengths.map(c => `<li><b>${c.name}</b> ${c.label} (${c.score}점)</li>`).join('') : '<li>두드러지게 높은 항목은 없지만 고르게 무난합니다.</li>'}</ul></div>
-      <div class="k-bad"><h3>조심할 점</h3><ul>${R.cautions.length ? R.cautions.map(c => `<li><b>${c.name}</b> ${c.label} (${c.score}점)</li>`).join('') : '<li>크게 부딪히는 항목이 없습니다.</li>'}</ul></div>
-      <div><h3>관계 처방</h3><ul>${R.advice.map(a => `<li>${a}</li>`).join('')}</ul></div>
+      <div class="k-good"><h3>잘 맞는 점</h3><ul>${R.strengths.length ? R.strengths.map(c => `<li>${c.good}</li>`).join('') : '<li>특별히 두드러진 점은 없지만 전체적으로 고르게 무난해요.</li>'}</ul></div>
+      <div class="k-bad"><h3>조심할 점</h3><ul>${R.cautions.length ? R.cautions.map(c => `<li>${c.bad}</li>`).join('') : '<li>크게 부딪히는 부분이 없어요.</li>'}</ul></div>
+      <div><h3>이렇게 하면 좋아요</h3><ul>${R.advice.map(a => `<li>${a}</li>`).join('')}</ul></div>
     </div>
   </section>
   <section class="block">
-    <h2>두 사람의 명식 <small>시주 · 일주 · 월주 · 년주</small></h2>
+    <h2>자세한 풀이 <small>여덟 가지로 나눠 본 궁합</small></h2>
+    <div class="details">${R.cats.map(c => `<article class="cat"><header><h3>${c.name}<small>${c.sub}</small></h3><span class="pill ${cls(c.score)}">${c.label} · ${c.score}점</span></header><div class="body">${c.html}</div><span class="term">명리 용어: ${c.term} · 전체 점수의 ${c.w}%</span></article>`).join('')}</div>
+  </section>
+  <section class="block">
+    <h2>두 사람은 어떤 사람일까 <small>각자의 사주</small></h2>
     <div class="charts">${chartHTML(A, B)}${chartHTML(B, A)}</div>
   </section>
   <section class="block">
-    <h2>기둥 교차표 <small>천간합·충 / 지지 합·충·형·파·해·원진</small></h2>
-    ${crossHTML(A, B, R)}
-  </section>
-  <section class="block">
-    <h2>항목별 풀이</h2>
-    <div class="details">${R.cats.map(c => `<article class="cat"><header><h3>${c.name}<small>${c.sub} · 비중 ${c.w}%</small></h3><span class="pill ${cls(c.score)}">${c.label} · ${c.score}점</span></header><div class="body">${c.html}</div></article>`).join('')}</div>
-  </section>
-  <section class="block">
-    <h2>연도별 관계 흐름</h2>
+    <h2>앞으로 6년, 두 사람의 흐름</h2>
     ${flowHTML(A, B)}
+  </section>
+  <section class="block">
+    <details class="pro">
+      <summary>전문가용: 네 기둥 교차표 보기</summary>
+      ${crossHTML(A, B, R)}
+    </details>
   </section>`;
   return true;
 }

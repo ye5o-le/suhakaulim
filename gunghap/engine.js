@@ -189,7 +189,7 @@ function computeChart(inp, opts) {
   let dayJ = jdFromDate(lmt.getUTCDate(), lmt.getUTCMonth() + 1, lmt.getUTCFullYear());
   let hourStemDay = dayJ;
   if (hasTime && lmMin >= 23 * 60) {
-    if (opts.zasi === 'yaja') hourStemDay = dayJ + 1; else { dayJ += 1; hourStemDay = dayJ; }
+    dayJ += 1; hourStemDay = dayJ; // 통자시: 23시부터 다음 날
   }
   const dIdx = mod(dayJ + 49, 60);
   const day = { s: dIdx % 10, b: dIdx % 12 };
