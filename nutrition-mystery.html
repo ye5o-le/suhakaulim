@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Jua&family=Press+Start+2P&display=swap">
 <style>
-/* Layout: one game cabinet column — HUD strip of nutrient slots, pixel cafeteria screen, controller deck. Single dark arcade look by choice. */
+/* Layout: one game cabinet column — status strip (hearts, stars, help, goal), scrolling pixel school map, controller deck. Single dark arcade look by choice. */
 :root {
   --night: #221a38;
   --plum: #3a2c5e;
@@ -35,199 +35,190 @@
 * { box-sizing: border-box; }
 html, body { background: var(--night); }
 body {
-  color: var(--paper);
-  font-family: var(--f-body);
-  font-size: 16px;
-  line-height: 1.5;
+  color: var(--paper); font-family: var(--f-body); font-size: 16px; line-height: 1.5;
   background-color: var(--night);
-  background-image: radial-gradient(var(--plum) 1px, transparent 1px);
-  background-size: 12px 12px;
-  min-height: 100vh;
-  -webkit-tap-highlight-color: transparent;
+  background-image: radial-gradient(var(--plum) 1px, transparent 1px); background-size: 12px 12px;
+  min-height: 100vh; -webkit-tap-highlight-color: transparent;
 }
 .wrap {
-  max-width: 920px;
-  margin: 0 auto;
-  padding-block: 20px 40px;
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+  max-width: 940px; margin: 0 auto; padding-block: 18px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 14px;
 }
 .top { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.eyebrow { margin: 0; font-family: var(--f-body); color: var(--mint); font-size: 14px; letter-spacing: .04em; }
+.eyebrow { margin: 0; color: var(--mint); font-size: 14px; letter-spacing: .04em; }
 h1 {
-  margin: 2px 0 0; font-family: var(--f-display); font-weight: 400; font-size: clamp(30px, 6vw, 44px);
-  line-height: 1.05; color: var(--mustard); text-shadow: 3px 3px 0 var(--tomato), 6px 6px 0 var(--ink);
-  text-wrap: balance;
+  margin: 2px 0 0; font-family: var(--f-display); font-weight: 400; font-size: clamp(30px, 6vw, 44px); line-height: 1.05;
+  color: var(--mustard); text-shadow: 3px 3px 0 var(--tomato), 6px 6px 0 var(--ink); text-wrap: balance;
 }
-.pix {
-  box-shadow: 0 -4px 0 0 var(--ink), 0 4px 0 0 var(--ink), -4px 0 0 0 var(--ink), 4px 0 0 0 var(--ink), 4px 8px 0 0 rgba(0,0,0,.35);
-}
+.pix { box-shadow: 0 -4px 0 0 var(--ink), 0 4px 0 0 var(--ink), -4px 0 0 0 var(--ink), 4px 0 0 0 var(--ink), 4px 8px 0 0 rgba(0,0,0,.35); }
+.bx { box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink); }
 .pbtn {
-  font-family: var(--f-display); font-size: 18px; color: var(--ink); background: var(--mustard);
-  border: 0; padding: 10px 18px; margin: 4px; cursor: pointer;
+  font-family: var(--f-display); font-size: 18px; color: var(--ink); background: var(--mustard); border: 0; padding: 10px 18px; margin: 4px; cursor: pointer;
   box-shadow: 0 -4px 0 0 var(--ink), 0 4px 0 0 var(--ink), -4px 0 0 0 var(--ink), 4px 0 0 0 var(--ink), inset 0 -4px 0 0 var(--mustard-dk);
 }
 .pbtn:hover { filter: brightness(1.06); }
-.pbtn:active { transform: translateY(2px); box-shadow: 0 -4px 0 0 var(--ink), 0 4px 0 0 var(--ink), -4px 0 0 0 var(--ink), 4px 0 0 0 var(--ink); }
-.pbtn:focus-visible, .choice:focus-visible, .chip:focus-visible, .bin:focus-visible, .padbtn:focus-visible, input:focus-visible { outline: 3px dashed var(--sky); outline-offset: 6px; }
+.pbtn:active { transform: translateY(2px); }
+.pbtn:disabled { filter: grayscale(1) opacity(.5); cursor: default; }
 .pbtn.ghost { background: var(--plum-2); color: var(--paper); box-shadow: 0 -4px 0 0 var(--ink), 0 4px 0 0 var(--ink), -4px 0 0 0 var(--ink), 4px 0 0 0 var(--ink), inset 0 -4px 0 0 var(--plum); }
+.pbtn.mint { background: var(--mint); box-shadow: 0 -4px 0 0 var(--ink), 0 4px 0 0 var(--ink), -4px 0 0 0 var(--ink), 4px 0 0 0 var(--ink), inset 0 -4px 0 0 var(--mint-dk); }
+.pbtn:focus-visible, .choice:focus-visible, .padbtn:focus-visible, .rg:focus-visible, input:focus-visible { outline: 3px dashed var(--sky); outline-offset: 6px; }
 .mute { font-size: 15px; padding: 8px 12px; }
 
+.status { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin: 4px; padding: 10px 14px; background: var(--plum); }
+.stat { display: flex; align-items: center; gap: 6px; font-family: var(--f-pixel); font-size: 12px; font-variant-numeric: tabular-nums; }
+.stat canvas { width: 20px; height: 20px; image-rendering: pixelated; }
+.hearts { display: flex; gap: 3px; }
+.hearts canvas.off { filter: brightness(0) opacity(.4); }
+.goal { flex: 1 1 260px; min-width: 0; font-size: 15px; color: var(--paper); text-align: right; }
+.goal b { color: var(--mustard); font-weight: 400; }
+
 .hud { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin: 4px; }
-.slot {
-  background: var(--plum); padding: 8px 4px 6px; display: flex; flex-direction: column; align-items: center; gap: 2px;
-  box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink);
-  min-width: 0;
-}
-.slot canvas { width: 36px; height: 36px; image-rendering: pixelated; filter: brightness(0) opacity(.45); transition: filter .3s; }
+.slot { background: var(--plum); padding: 6px 4px 4px; display: flex; flex-direction: column; align-items: center; gap: 0; min-width: 0; }
+.slot canvas { width: 30px; height: 30px; image-rendering: pixelated; filter: brightness(0) opacity(.45); }
 .slot.got { background: var(--plum-2); }
 .slot.got canvas { filter: none; animation: pop .5s ease-out; }
-.slot span { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.slot span { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 .slot.got span { color: var(--paper); }
 @keyframes pop { 0% { transform: scale(.4); } 70% { transform: scale(1.25); } 100% { transform: scale(1); } }
 
 .screen { position: relative; margin: 4px; background: var(--ink); line-height: 0; }
-.screen canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; image-rendering: crisp-edges; }
-.toast {
-  position: absolute; left: 50%; top: 12px; transform: translateX(-50%); line-height: 1.3;
-  background: var(--mustard); color: var(--ink); font-family: var(--f-display); font-size: 18px; padding: 6px 14px;
-  white-space: nowrap; pointer-events: none;
-}
-.statusbar { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0 4px; }
-.hint { margin: 0; color: var(--paper); font-size: 16px; min-width: 0; }
-.hint b { color: var(--mustard); font-weight: 400; }
-.score { font-family: var(--f-pixel); font-size: 10px; color: var(--mint); letter-spacing: .05em; font-variant-numeric: tabular-nums; }
+.screen canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; }
+.screen.hurt { animation: hurt .35s; }
+@keyframes hurt { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.toast { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); line-height: 1.3; background: var(--mustard); color: var(--ink); font-family: var(--f-display); font-size: 18px; padding: 6px 14px; white-space: nowrap; pointer-events: none; max-width: 90%; overflow: hidden; text-overflow: ellipsis; }
 .keys { margin: 0 4px; color: var(--muted); font-size: 14px; }
 .keys kbd { font-family: var(--f-pixel); font-size: 9px; background: var(--plum-2); color: var(--paper); padding: 3px 5px; margin: 0 2px; }
 
 .pad { display: none; justify-content: space-between; align-items: center; gap: 16px; margin: 4px; user-select: none; -webkit-user-select: none; touch-action: none; }
 .dpad { display: grid; grid-template-columns: repeat(3, 58px); grid-template-rows: repeat(3, 58px); gap: 4px; }
-.padbtn {
-  border: 0; background: var(--plum-2); color: var(--paper); font-family: var(--f-pixel); font-size: 14px; touch-action: none;
-  box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink), inset 0 -4px 0 0 var(--plum);
-}
+.padbtn { border: 0; background: var(--plum-2); color: var(--paper); font-family: var(--f-pixel); font-size: 14px; touch-action: none; box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink), inset 0 -4px 0 0 var(--plum); }
 .padbtn.on { background: var(--mint-dk); }
-.padbtn.up { grid-column: 2; grid-row: 1; } .padbtn.left { grid-column: 1; grid-row: 2; }
-.padbtn.right { grid-column: 3; grid-row: 2; } .padbtn.down { grid-column: 2; grid-row: 3; }
-.abtn {
-  width: 96px; height: 96px; border: 0; background: var(--tomato); color: var(--paper); font-family: var(--f-display); font-size: 22px; line-height: 1.1; touch-action: none;
-  box-shadow: 0 -4px 0 0 var(--ink), 0 4px 0 0 var(--ink), -4px 0 0 0 var(--ink), 4px 0 0 0 var(--ink), inset 0 -6px 0 0 #b83b30;
-}
+.padbtn.up { grid-column: 2; grid-row: 1; } .padbtn.left { grid-column: 1; grid-row: 2; } .padbtn.right { grid-column: 3; grid-row: 2; } .padbtn.down { grid-column: 2; grid-row: 3; }
+.abtn { width: 96px; height: 96px; border: 0; background: var(--tomato); color: var(--paper); font-family: var(--f-display); font-size: 22px; line-height: 1.1; touch-action: none; box-shadow: 0 -4px 0 0 var(--ink), 0 4px 0 0 var(--ink), -4px 0 0 0 var(--ink), 4px 0 0 0 var(--ink), inset 0 -6px 0 0 #b83b30; }
 .abtn small { display: block; font-family: var(--f-pixel); font-size: 10px; margin-top: 4px; }
 .abtn.on { filter: brightness(1.15); }
 @media (pointer: coarse) { .pad { display: flex; } .keys { display: none; } }
 
 /* overlays */
-.overlay {
-  position: fixed; inset: 0; z-index: 50; display: flex; justify-content: center; align-items: flex-end;
-  background: rgba(22, 15, 38, .62);
-  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(20px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
-  overflow-y: auto;
-}
+.overlay { position: fixed; inset: 0; z-index: 50; display: flex; justify-content: center; align-items: flex-end; background: rgba(22, 15, 38, .62); overflow-y: auto;
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(20px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
 .overlay.center { align-items: center; }
+.overlay.dark { background: rgba(22, 15, 38, .86); }
 .win { background: var(--paper); color: var(--ink); width: 100%; max-width: 700px; padding: 18px 20px; margin: 8px; }
 .dlg { display: flex; gap: 16px; align-items: flex-start; }
-.portrait { flex: 0 0 auto; width: 84px; height: 96px; background: var(--cream); display: flex; align-items: center; justify-content: center; box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink); }
+.portrait { flex: 0 0 auto; width: 84px; height: 96px; background: var(--cream); display: flex; align-items: center; justify-content: center; }
 .portrait canvas { width: 70px; height: 90px; image-rendering: pixelated; }
 .dlg-body { flex: 1 1 auto; min-width: 0; }
 .speaker { display: inline-block; font-family: var(--f-display); font-size: 18px; background: var(--ink); color: var(--mustard); padding: 2px 10px; margin-bottom: 6px; }
-.speaker .role { color: var(--mint); margin-left: 6px; font-size: 15px; }
 .dtext { font-size: 19px; line-height: 1.55; min-height: 3.1em; margin: 0; cursor: pointer; word-break: keep-all; overflow-wrap: anywhere; }
-.qtag { font-family: var(--f-display); font-size: 15px; color: var(--tomato); margin: 0 0 6px; letter-spacing: .04em; }
+.dfoot { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+.next { animation: nudge 1s steps(2) infinite; }
+@keyframes nudge { 50% { transform: translateX(3px); } }
+
+/* battle */
+.battle { max-width: 720px; }
+.b-top { display: flex; align-items: center; gap: 14px; }
+.b-enemy { flex: 0 0 auto; width: 104px; height: 104px; background: var(--ink); display: grid; place-items: center; position: relative; }
+.b-enemy canvas { width: 88px; height: 88px; image-rendering: pixelated; }
+.b-enemy.hit canvas { animation: hit .4s; }
+.b-enemy.atk canvas { animation: atk .4s; }
+@keyframes hit { 0%,100% { transform: none; filter: none; } 20% { transform: translateX(6px); filter: brightness(3); } 50% { transform: translateX(-6px); } }
+@keyframes atk { 50% { transform: scale(1.25) translateY(6px); } }
+.dmg { position: absolute; top: -6px; right: -10px; font-family: var(--f-pixel); font-size: 16px; color: var(--mustard); text-shadow: 2px 2px 0 var(--ink); animation: rise .9s forwards; pointer-events: none; line-height: 1; }
+.dmg.crit { color: var(--tomato); font-size: 20px; }
+@keyframes rise { to { transform: translateY(-26px); opacity: 0; } }
+.b-info { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.b-name { font-family: var(--f-display); font-size: 22px; line-height: 1.1; }
+.b-name small { font-size: 15px; color: #6b5f8c; margin-left: 6px; }
+.hpbar { height: 16px; background: #d9d4e6; position: relative; }
+.hpbar i { position: absolute; inset: 0 auto 0 0; background: var(--tomato); transition: width .35s steps(6); }
+.hp-label { font-family: var(--f-pixel); font-size: 10px; color: #6b5f8c; }
+.b-line { margin: 12px 0 0; font-size: 16px; color: #6b5f8c; word-break: keep-all; }
+.timer { height: 8px; background: #e8e2f2; margin: 12px 0 0; position: relative; }
+.timer i { position: absolute; inset: 0 auto 0 0; background: var(--mint-dk); }
+.timer.warn i { background: var(--tomato); }
+.qtag { font-family: var(--f-display); font-size: 15px; color: var(--tomato); margin: 10px 0 2px; }
+.ctx { margin: 6px 0 4px; padding: 8px 10px; background: var(--cream); font-size: 16px; word-break: keep-all; }
+.b-q { font-size: 19px; line-height: 1.5; margin: 2px 0 0; word-break: keep-all; }
 .choices { display: grid; gap: 10px; margin-top: 12px; }
-.choice {
-  display: flex; gap: 10px; align-items: center; text-align: left; width: 100%;
-  font-family: var(--f-body); font-size: 17px; color: var(--ink); background: #fff; border: 0; padding: 10px 12px; cursor: pointer;
-  box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink); word-break: keep-all;
-}
+.choice { display: flex; gap: 10px; align-items: center; text-align: left; width: 100%; font-family: var(--f-body); font-size: 17px; color: var(--ink); background: #fff; border: 0; padding: 10px 12px; cursor: pointer; word-break: keep-all;
+  box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink); }
 .choice:hover:not(:disabled) { background: var(--cream); }
 .choice .num { flex: 0 0 auto; font-family: var(--f-pixel); font-size: 11px; background: var(--ink); color: var(--paper); width: 26px; height: 26px; display: grid; place-items: center; }
 .choice.ok { background: var(--good-bg); } .choice.ok .num { background: var(--mint-dk); }
 .choice.no { background: var(--bad-bg); } .choice.no .num { background: var(--tomato); }
+.choice.gone { opacity: .25; text-decoration: line-through; }
 .choice:disabled { cursor: default; }
 .choices.ox { grid-template-columns: 1fr 1fr; }
 .choices.ox .choice { justify-content: center; font-family: var(--f-pixel); font-size: 26px; padding: 16px; }
-.feedback { margin-top: 14px; padding: 10px 12px; font-size: 16px; line-height: 1.5; background: var(--cream); word-break: keep-all; }
+.feedback { margin-top: 12px; padding: 10px 12px; font-size: 16px; line-height: 1.5; background: var(--cream); word-break: keep-all; }
 .feedback b { font-family: var(--f-display); font-weight: 400; font-size: 18px; }
 .feedback.ok b { color: var(--mint-dk); } .feedback.no b { color: var(--tomato); }
-.dfoot { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 12px; }
-.qcount { font-family: var(--f-display); font-size: 15px; color: #6b5f8c; margin-right: auto; }
-.next { animation: nudge 1s steps(2) infinite; }
-@keyframes nudge { 50% { transform: translateX(3px); } }
+.b-foot { display: flex; align-items: center; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.b-foot .hearts { margin-right: auto; }
+.b-foot .hearts canvas { width: 22px; height: 22px; image-rendering: pixelated; }
+.b-foot .pbtn { font-size: 16px; padding: 8px 12px; }
 
-/* puzzle */
-.pz-foods { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 4px; min-height: 44px; }
-.chip {
-  font-family: var(--f-body); font-size: 17px; border: 0; background: #fff; color: var(--ink); padding: 6px 12px; cursor: pointer;
-  box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink);
-}
-.chip.sel { background: var(--mustard); transform: translateY(-3px); }
-.chip.shake { animation: shake .35s; background: var(--bad-bg); }
-@keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
-.bins { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 8px 4px 0; }
-.bin {
-  border: 0; background: var(--cream); color: var(--ink); text-align: left; padding: 8px; min-height: 84px; cursor: pointer; font-family: var(--f-body);
-  box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink); display: flex; flex-direction: column; gap: 6px; min-width: 0;
-}
-.bin .bt { font-family: var(--f-display); font-size: 16px; line-height: 1.2; word-break: keep-all; }
-.bin .bin-items { display: flex; flex-wrap: wrap; gap: 4px; }
-.bin .bin-items span { font-size: 13px; background: var(--good-bg); padding: 1px 6px; }
-.bin.flash { background: var(--good-bg); }
-.pz-msg { margin: 14px 4px 0; font-size: 16px; min-height: 1.5em; word-break: keep-all; }
+/* rush */
+.rushwin { max-width: 640px; text-align: center; }
+.r-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.r-title { font-family: var(--f-display); font-size: 26px; color: var(--tomato); }
+.r-score { font-family: var(--f-pixel); font-size: 13px; font-variant-numeric: tabular-nums; }
+.r-combo { font-family: var(--f-pixel); font-size: 11px; color: var(--mustard-dk); min-width: 6em; }
+.r-food { margin: 16px auto 6px; font-family: var(--f-display); font-size: clamp(36px, 10vw, 56px); line-height: 1.2; background: #fff; padding: 14px; max-width: 360px; }
+.r-food.ok { background: var(--good-bg); } .r-food.no { background: var(--bad-bg); animation: hurt .3s; }
+.r-tip { min-height: 3em; margin: 8px 0; font-size: 16px; word-break: keep-all; }
+.r-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 8px 4px; }
+.rg { border: 0; background: var(--cream); color: var(--ink); font-family: var(--f-display); font-size: 17px; padding: 12px 6px; cursor: pointer; line-height: 1.2; word-break: keep-all;
+  box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink); min-width: 0; }
+.rg small { display: block; font-family: var(--f-pixel); font-size: 9px; color: #6b5f8c; margin-bottom: 4px; }
+.rg:active { background: var(--mustard); }
 
 /* title & ending */
-.title-card { text-align: center; max-width: 620px; padding: 26px 22px 22px; }
-.title-card h2 { font-family: var(--f-display); font-weight: 400; font-size: clamp(36px, 9vw, 56px); margin: 4px 0 0; color: var(--tomato); text-shadow: 3px 3px 0 var(--mustard); line-height: 1.05; text-wrap: balance; }
-.title-card .sub { font-family: var(--f-pixel); font-size: 10px; color: #6b5f8c; margin: 10px 0 0; letter-spacing: .06em; }
-.parade { display: flex; justify-content: center; gap: 10px; margin: 18px 0 8px; flex-wrap: wrap; }
+.title-card { text-align: center; max-width: 640px; padding: 24px 22px 20px; }
+.title-card h2 { font-family: var(--f-display); font-weight: 400; font-size: clamp(36px, 9vw, 56px); margin: 4px 0 0; color: var(--tomato); text-shadow: 3px 3px 0 var(--mustard); line-height: 1.05; }
+.title-card .sub { font-family: var(--f-pixel); font-size: 10px; color: #6b5f8c; margin: 8px 0 0; letter-spacing: .06em; }
+.parade { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin: 16px 0 6px; flex-wrap: wrap; }
 .parade canvas { width: 42px; height: 42px; image-rendering: pixelated; animation: hop 1.2s steps(2) infinite; }
-.parade canvas:nth-child(2) { animation-delay: .2s } .parade canvas:nth-child(3) { animation-delay: .4s }
-.parade canvas:nth-child(4) { animation-delay: .6s } .parade canvas:nth-child(5) { animation-delay: .8s } .parade canvas:nth-child(6) { animation-delay: 1s }
+.parade canvas.big { width: 56px; height: 56px; animation-duration: .8s; }
+.parade canvas:nth-child(2n) { animation-delay: .3s } .parade canvas:nth-child(3n) { animation-delay: .6s }
 @keyframes hop { 50% { transform: translateY(-6px); } }
-.story { font-size: 17px; line-height: 1.6; margin: 10px auto 16px; max-width: 30em; word-break: keep-all; }
-.namebox { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
-.namebox label { font-family: var(--f-display); font-size: 18px; }
-.namebox input {
-  font-family: var(--f-body); font-size: 18px; padding: 8px 10px; width: 12em; max-width: 100%; border: 0; background: #fff; color: var(--ink);
-  box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink);
-}
-.howto { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0 0 20px; text-align: left; }
+.story { font-size: 17px; line-height: 1.6; margin: 10px auto 14px; max-width: 32em; word-break: keep-all; }
+.howto { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0 0 18px; text-align: left; }
 .howto div { background: var(--cream); padding: 8px 10px; font-size: 14px; line-height: 1.45; word-break: keep-all; }
 .howto b { display: block; font-family: var(--f-display); font-weight: 400; font-size: 16px; color: var(--tomato); }
-.cert { max-width: 640px; text-align: center; border: 6px double var(--mustard-dk); padding: 22px 20px; }
-.cert .seal { font-family: var(--f-pixel); font-size: 10px; color: var(--mustard-dk); letter-spacing: .08em; }
-.cert h2 { font-family: var(--f-display); font-weight: 400; font-size: clamp(30px, 7vw, 42px); margin: 6px 0 4px; color: var(--ink); }
-.cert .who { font-size: 22px; margin: 6px 0; }
-.cert .rank { display: inline-block; font-family: var(--f-display); font-size: 22px; background: var(--tomato); color: var(--paper); padding: 4px 14px; margin: 6px 0 10px; }
-.stats { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin: 10px 0 14px; }
-.stats div { background: var(--cream); padding: 8px 14px; min-width: 110px; }
-.stats b { display: block; font-family: var(--f-pixel); font-size: 18px; font-variant-numeric: tabular-nums; margin-top: 4px; }
-.stats span { font-size: 14px; color: #6b5f8c; }
+.namebox { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; }
+.namebox label { font-family: var(--f-display); font-size: 18px; }
+.namebox input { font-family: var(--f-body); font-size: 18px; padding: 8px 10px; width: 12em; max-width: 100%; border: 0; background: #fff; color: var(--ink); box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink); }
+.cert { max-width: 660px; text-align: center; border: 6px double var(--mustard-dk); padding: 22px 20px; }
+.cert .seal { font-family: var(--f-pixel); font-size: 10px; color: var(--mustard-dk); letter-spacing: .08em; margin: 0; }
+.cert h2 { font-family: var(--f-display); font-weight: 400; font-size: clamp(30px, 7vw, 42px); margin: 6px 0 4px; }
+.cert .who { font-size: 22px; margin: 4px 0; }
+.cert .rank { display: inline-block; font-family: var(--f-display); font-size: 22px; background: var(--tomato); color: var(--paper); padding: 4px 14px; margin: 6px 0 8px; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 10px 0 14px; }
+.stats div { background: var(--cream); padding: 8px 6px; min-width: 0; }
+.stats b { display: block; font-family: var(--f-pixel); font-size: 15px; font-variant-numeric: tabular-nums; margin-top: 4px; }
+.stats span { font-size: 13px; color: #6b5f8c; }
 .review { text-align: left; margin: 10px 0 14px; }
 .review h3 { font-family: var(--f-display); font-weight: 400; font-size: 20px; margin: 0 0 8px; }
-.review ol { margin: 0; padding-left: 1.4em; display: grid; gap: 8px; max-height: 260px; overflow-y: auto; }
+.review ol { margin: 0; padding-left: 1.4em; display: grid; gap: 8px; max-height: 240px; overflow-y: auto; }
 .review li { font-size: 15px; line-height: 1.5; word-break: keep-all; }
 .review li .ans { color: var(--mint-dk); }
-.cert-date { font-size: 14px; color: #6b5f8c; margin: 0 0 10px; }
+.cert-date { font-size: 14px; color: #6b5f8c; margin: 0 0 6px; }
 
 @media (max-width: 560px) {
-  .hud { gap: 7px; }
-  .slot canvas { width: 28px; height: 28px; }
-  .slot span { font-size: 11px; }
-  .dlg { gap: 10px; }
-  .portrait { width: 60px; height: 70px; }
-  .portrait canvas { width: 50px; height: 64px; }
-  .dtext { font-size: 17px; }
-  .choice { font-size: 16px; }
-  .bins { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .howto { grid-template-columns: 1fr; }
+  .hud { gap: 6px; } .slot canvas { width: 24px; height: 24px; } .slot span { font-size: 11px; }
+  .goal { text-align: left; }
+  .dlg { gap: 10px; } .portrait { width: 60px; height: 70px; } .portrait canvas { width: 50px; height: 64px; }
+  .dtext, .b-q { font-size: 17px; } .choice { font-size: 16px; }
+  .b-enemy { width: 76px; height: 76px; } .b-enemy canvas { width: 64px; height: 64px; }
+  .r-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .howto { grid-template-columns: 1fr; } .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .win { padding: 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .parade canvas, .next, .slot.got canvas, .chip.shake { animation: none; }
+  .parade canvas, .next, .slot.got canvas, .screen.hurt, .b-enemy.hit canvas, .b-enemy.atk canvas, .r-food.no { animation: none; }
 }
 </style>
 </head>
@@ -235,24 +226,26 @@ h1 {
 <main class="wrap">
   <header class="top">
     <div>
-      <p class="eyebrow">기술·가정 1 · 청소년기 영양 복습 퀘스트</p>
+      <p class="eyebrow">기술·가정 1 · 청소년기 영양 복습 RPG</p>
       <h1>급식실 미스터리</h1>
     </div>
     <button class="pbtn ghost mute" id="muteBtn" type="button" aria-pressed="false">소리 켜짐</button>
   </header>
 
-  <section class="hud" id="hud" aria-label="찾은 영양소"></section>
+  <section class="status bx" aria-label="상태">
+    <div class="hearts" id="hearts" aria-label="체력"></div>
+    <div class="stat" title="별"><canvas id="icoStar"></canvas><span id="starCount">0</span></div>
+    <div class="stat" title="도움 요청 횟수"><canvas id="icoHelp"></canvas><span id="helpCount">0</span></div>
+    <p class="goal" id="goal"></p>
+  </section>
 
-  <div class="screen pix">
-    <canvas id="game" aria-label="급식실 지도. 방향키로 돌아다니고 스페이스로 조사해요."></canvas>
+  <section class="hud" id="hud" aria-label="구출한 영양소"></section>
+
+  <div class="screen pix" id="screen">
+    <canvas id="game" aria-label="학교 급식실 지도. 방향키로 돌아다니고 스페이스로 말을 걸어요."></canvas>
     <div class="toast pix" id="toast" hidden></div>
   </div>
-
-  <div class="statusbar">
-    <p class="hint" id="hint">반짝이는 곳을 조사해 보자!</p>
-    <span class="score" id="score">0/0</span>
-  </div>
-  <p class="keys">이동 <kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd> 또는 <kbd>WASD</kbd> · 조사하기 <kbd>SPACE</kbd> · 답 고르기 <kbd>1</kbd>~<kbd>4</kbd></p>
+  <p class="keys">이동 <kbd>←↑↓→</kbd>/<kbd>WASD</kbd> · 말 걸기 <kbd>SPACE</kbd> · 답 <kbd>1</kbd>~<kbd>4</kbd> · 다음 <kbd>ENTER</kbd> · 도움 요청 <kbd>H</kbd></p>
 
   <div class="pad" aria-label="조작 버튼">
     <div class="dpad">
@@ -261,73 +254,104 @@ h1 {
       <button class="padbtn right" data-dir="right" type="button" aria-label="오른쪽으로">▶</button>
       <button class="padbtn down" data-dir="down" type="button" aria-label="아래로">▼</button>
     </div>
-    <button class="abtn" id="aBtn" type="button">조사<small>A</small></button>
+    <button class="abtn" id="aBtn" type="button">말 걸기<small>A</small></button>
   </div>
 </main>
 
-<!-- title -->
-<div class="overlay center" id="titleScreen">
+<div class="overlay center dark" id="titleScreen">
   <div class="win pix title-card">
-    <p class="sub">MIRAE-N TECH·HOME 1 / CH.2-1</p>
+    <p class="sub">TECH·HOME 1 · TEEN NUTRITION QUEST</p>
     <h2>급식실 미스터리</h2>
     <div class="parade" id="parade"></div>
-    <p class="story">점심 배식 30분 전, 급식실에서 <b>영양소 친구 6명</b>이 감쪽같이 사라졌어요. 급식실을 돌아다니며 반짝이는 곳을 조사하고, 친구들이 내는 문제를 풀어 모두 데려오세요!</p>
+    <p class="story">점심시간 직전, <b>정크푸드 대마왕</b>의 부하들이 영양소 친구 6명을 붙잡아 학교 곳곳에 숨었어요! 주방, 급식실, 창고, 복도를 누비며 몬스터와 <b>퀴즈 배틀</b>을 벌이고 친구들을 구해 주세요.</p>
     <div class="howto">
-      <div><b>돌아다니기</b>방향키·WASD 또는 화면의 방향 버튼</div>
-      <div><b>조사하기</b>가까이 가서 스페이스 또는 조사 버튼</div>
-      <div><b>데려오기</b>3문제 중 2문제 이상 맞히면 성공</div>
+      <div><b>퀴즈 배틀</b>정답을 맞히면 공격! 6초 안에 맞히면 2배 크리티컬</div>
+      <div><b>체력 ♥ 5칸</b>틀리거나 시간이 지나면 1칸 줄어요. 0칸이면 보건실로</div>
+      <div><b>도움 요청</b>구한 친구 1명당 1번, 오답 2개를 지워 줘요</div>
+      <div><b>별 모으기</b>곳곳의 별과 미니게임으로 탐정 점수를 올려요</div>
     </div>
     <form class="namebox" id="startForm">
       <label for="nameInput">탐정 이름</label>
       <input id="nameInput" maxlength="10" autocomplete="off" placeholder="예: 김영양">
-      <button class="pbtn" type="submit">수사 시작</button>
+      <button class="pbtn" type="submit">모험 시작</button>
     </form>
   </div>
 </div>
 
-<!-- dialog -->
 <div class="overlay" id="modal" hidden>
-  <div class="win pix" id="win">
+  <div class="win pix">
     <div class="dlg">
-      <div class="portrait" id="portrait"><canvas id="portraitCv" width="14" height="18"></canvas></div>
+      <div class="portrait bx" id="portrait"><canvas id="portraitCv" width="24" height="24"></canvas></div>
       <div class="dlg-body">
         <div class="speaker" id="speaker"></div>
-        <p class="qtag" id="qtag" hidden></p>
         <p class="dtext" id="dtext"></p>
       </div>
     </div>
-    <div id="extra"></div>
-    <div class="dfoot">
-      <span class="qcount" id="qcount"></span>
-      <button class="pbtn next" id="nextBtn" type="button">다음 ▶</button>
+    <div class="dfoot"><button class="pbtn next" id="nextBtn" type="button">다음 ▶</button></div>
+  </div>
+</div>
+
+<div class="overlay center dark" id="battle" hidden>
+  <div class="win pix battle">
+    <div class="b-top">
+      <div class="b-enemy bx" id="bEnemy"><canvas id="bEnemyCv" width="24" height="24"></canvas></div>
+      <div class="b-info">
+        <div class="b-name" id="bName"></div>
+        <div class="hpbar bx"><i id="bHp"></i></div>
+        <span class="hp-label" id="bHpLabel"></span>
+      </div>
+    </div>
+    <p class="b-line" id="bLine"></p>
+    <div class="timer" id="bTimer"><i id="bTime"></i></div>
+    <p class="qtag" id="bTag"></p>
+    <p class="ctx" id="bCtx" hidden></p>
+    <p class="b-q" id="bQ"></p>
+    <div class="choices" id="bChoices"></div>
+    <div class="feedback" id="bFb" hidden></div>
+    <div class="b-foot">
+      <div class="hearts" id="bHearts"></div>
+      <button class="pbtn mint" id="bHelp" type="button">도움 요청</button>
+      <button class="pbtn ghost" id="bRun" type="button">후퇴</button>
+      <button class="pbtn next" id="bNext" type="button" hidden>다음 ▶</button>
     </div>
   </div>
 </div>
 
-<!-- ending -->
-<div class="overlay center" id="ending" hidden>
+<div class="overlay center dark" id="rush" hidden>
+  <div class="win pix rushwin">
+    <div class="r-top">
+      <span class="r-title">배식 러시!</span>
+      <span class="r-combo" id="rCombo"></span>
+      <span class="r-score" id="rScore">0/12</span>
+    </div>
+    <div class="timer" id="rTimer"><i id="rTime"></i></div>
+    <div class="r-food bx" id="rFood">준비!</div>
+    <p class="r-tip" id="rTip"></p>
+    <div class="r-groups" id="rGroups"></div>
+    <div class="dfoot"><button class="pbtn" id="rBtn" type="button">시작!</button></div>
+  </div>
+</div>
+
+<div class="overlay center dark" id="ending" hidden>
   <div class="win pix cert" id="certBox"></div>
 </div>
 
 <script>
 (() => {
 'use strict';
-const TILE = 16, COLS = 22, ROWS = 14, SC = 3;
-const W = COLS * TILE, H = ROWS * TILE;
+const T = 16, MW = 40, MH = 26, VW = 352, VH = 224, SC = 3;
 
-// ---------- palette & sprites ----------
+// ================= palette & sprites =================
 const PAL = {
-  k:'#2b2142', w:'#fffdf6', g:'#d9d4e6', H:'#5a3a2e', S:'#ffd9b3', r:'#ff8fa3',
-  T:'#3f6fb5', P:'#2f3a5c', y:'#ffe58a', Y:'#f7c948', O:'#e08a2e', o:'#ff9e3d',
-  l:'#7ed36f', L:'#3a8f4c', m:'#b5d0ff', M:'#6a8ee8', b:'#8fdcff', c:'#4fb3e8', n:'#7fd1b9'
+  k:'#2b2142', w:'#fffdf6', g:'#d9d4e6', G:'#8090a8', H:'#5a3a2e', S:'#ffd9b3', r:'#ff8fa3', R:'#e8574a',
+  T:'#3f6fb5', P:'#2f3a5c', y:'#ffe58a', Y:'#f7c948', O:'#e08a2e', o:'#ff9e3d', l:'#7ed36f', L:'#3a8f4c',
+  m:'#b5d0ff', M:'#6a8ee8', b:'#8fdcff', c:'#4fb3e8', n:'#7fd1b9', p:'#ff9ccf', q:'#e86aa8', u:'#d39a5c', U:'#8a5a2e', z:'#7a3b1e'
 };
 function makeSprite(rows) {
   const w = Math.max(...rows.map(r => r.length)), h = rows.length;
   const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
   const x = cv.getContext('2d');
-  rows.forEach((row, j) => [...row].forEach((ch, i) => {
-    if (ch !== '.' && PAL[ch]) { x.fillStyle = PAL[ch]; x.fillRect(i, j, 1, 1); }
-  }));
+  rows.forEach((row, j) => [...row].forEach((ch, i) => { if (ch !== '.' && PAL[ch]) { x.fillStyle = PAL[ch]; x.fillRect(i, j, 1, 1); } }));
   return cv;
 }
 const HEAD_DOWN = ['....kkkk....','..kkHHHHkk..','.kHHHHHHHHk.','.kHHHHHHHHk.','.kHSSSSSSHk.','.kSSkSSkSSk.','.kSrSSSSrSk.','..kSSSSSSk..','...kkkkkk...'];
@@ -339,15 +363,12 @@ const BODY_SIDE = ['..kTTTwwTk..','..kTTTTTTk..','..kTSSTTTk..','..kTTTTTTk..'];
 const LEGS_A = ['..kPPPPPPk..','..kPPkkPPk..','..kkk..kkk..'];
 const LEGS_B = ['..kPPPPPPk..','.kPPk..kPPk.','.kkk....kkk.'];
 const PLAYER = {};
-for (const [dir, head, body] of [['down',HEAD_DOWN,BODY_DOWN],['up',HEAD_UP,BODY_UP],['side',HEAD_SIDE,BODY_SIDE]]) {
+for (const [dir, head, body] of [['down',HEAD_DOWN,BODY_DOWN],['up',HEAD_UP,BODY_UP],['side',HEAD_SIDE,BODY_SIDE]])
   PLAYER[dir] = [makeSprite([...head, ...body, ...LEGS_A]), makeSprite([...head, ...body, ...LEGS_B])];
-}
-const TEACHER = makeSprite([
-  '...kkkkkk...','..kwwwwwwk..','.kwwwwwwwwk.','.kwwwwwwwwk.','..kkkkkkkk..',
-  '..kHSSSSHk..','.kHSkSSkSHk.','.kHSrSSrSHk.','..kSSkkSSk..','...kkkkkk...',
-  '..kwwwwwwk..','.kSwwnnwwSk.','.kSwwwwwwSk.','..kwwwwwwk..','..kwwwwwwk..',
-  '..kPPkkPPk..','..kPPkkPPk..','..kkk..kkk..'
-]);
+const CHEF_HAT = ['...kkkkkk...','..kwwwwwwk..','.kwwwwwwwwk.','.kwwwwwwwwk.','..kkkkkkkk..'];
+const TEACHER = makeSprite([...CHEF_HAT,'..kHSSSSHk..','.kHSkSSkSHk.','.kHSrSSrSHk.','..kSSkkSSk..','...kkkkkk...','..kwwwwwwk..','.kSwwnnwwSk.','.kSwwwwwwSk.','..kwwwwwwk..','..kwwwwwwk..','..kPPkkPPk..','..kPPkkPPk..','..kkk..kkk..']);
+const COOK = makeSprite([...CHEF_HAT,'..kSSSSSSk..','.kSSkSSkSSk.','.kSrSSSSrSk.','..kSkkkkSk..','...kkkkkk...','..kbbbbbbk..','.kSbwwwwbSk.','.kSbwwwwbSk.','..kbwwwwbk..','..kbbbbbbk..','..kGGkkGGk..','..kGGkkGGk..','..kkk..kkk..']);
+const NURSE = makeSprite(['....kkkk....','..kkHHHHkk..','.kHHHHHHHHk.','.kHHHHHHHHk.','.kHSSSSSSHk.','.kHSkSSkSHk.','.kHSrSSrSHk.','.kHHSkkSHHk.','.kHkkkkkkHk.','..kwwwwwwk..','.kSwwRwwwSk.','.kSwRRRwwSk.','..kwwRwwwk..','..kwwwwwwk..','..kppkkppk..','..kkk..kkk..']);
 const SPR = {
   carb: makeSprite(['......kk......','....kkwwkk....','...kwwwwwwk...','..kwwwwwwwgk..','..kwwwwwwwgk..','.kwwkwwwwkwgk.','.kwwkwwwwkwgk.','.kwrwwwwwwrgk.','.kwwwwkkwwwgk.','.kwwwwwwwwwgk.','..kwwwwwwwgk..','..kwwwwwwggk..','...kkwwwggk...','.....kkkkk....']),
   protein: makeSprite(['..............','...kkkk.kkkk..','..kwwwwkwwwwk.','.kwwwwwwwwwwk.','.kwwwkkkkwwwk.','kwwwkYYYYkwwwk','kwwkYYYYYYkwwk','kwwkYkYYkYkwwk','kwwkYrYYrYkwwk','.kwkYYkkYYkwk.','.kwwkYYYYkwwk.','..kwwkkkkwwk..','...kkwwwwkk...','.....kkkk.....']),
@@ -356,354 +377,431 @@ const SPR = {
   vitamin: makeSprite(['......kkk.....','.....kllLk....','...kkkkLkkk...','..kowwooooOk..','.koowooooooOk.','.kooooooooOOk.','.kookooookoOk.','.kookooookoOk.','.koroooooroOk.','.kooookkooOOk.','..koooooooOk..','...kooooOOk...','....kkkkkk....','..............']),
   water: makeSprite(['......kk......','.....kbbk.....','.....kbbk.....','....kbwbbk....','...kbwbbbck...','..kbwbbbbbck..','..kbbbbbbbck..','.kbbkbbbbkbck.','.kbbkbbbbkbck.','.kbrbbbbbbrck.','.kbbbbkkbbbck.','..kbbbbbbbck..','...kkbbbcck...','.....kkkk.....'])
 };
+const MON = {
+  slime: makeSprite(['................','......kkkk......','....kkppppkk....','...kppwwppppk...','..kppwppppppqk..','..kpppppppppqk..','.kppkkppppkkpqk.','.kppkRppppkRpqk.','.kpppppppppppqk.','.kpppkkkkkkppqk.','.kppkwkwwkwkpqk.','kpppppppppppppqk','kqqqqqqqqqqqqqqk','.kkkkkkkkkkkkkk.']),
+  fried: makeSprite(['.....kkkkkk.....','...kkOYYYYOkk...','..kOYYYOYYYYOk..','.kOYYYYYYYOYYOk.','.kYYkkYYYYkkYYk.','.kYYkRYYYYkRYYk.','.kOYYYYYYYYYYOk.','.kYYYYkkkkYYYYk.','.kOYYkwkkwkYYOk.','.kYYYYkkkkYYYYk.','.kOYYYYYYYYYYOk.','.kYOYYOYYOYYOYk.','.kOkYOkYOkYOkOk.','..k.kk.kk.kk.k..']),
+  soda: makeSprite(['....kkkkkkkk....','...kwwwwwwwwk...','..kwwwbwwwwwwk..','..kzzzzzzzzzzk..','.kzzzzzzzzzzzzk.','.kzzkkzzzzkkzzk.','.kzzkRzzzzkRzzk.','.kzzzzzzzzzzzzk.','.kzzzzkkkkzzzzk.','.kzwzzzzzzzzwzk.','.kzzzzzwzzzzzzk.','.kzzwzzzzzwzzzk.','.kzkzzkzzkzzkzk.','..k.kk.kk.kk.k..']),
+  salt: makeSprite(['.....kkkkkk.....','....kGkGkGkk....','....kGGGGGGk....','...kkkkkkkkkk...','..kwwwwwwwwwwk..','..kwwkkwwkkwwk..','..kwwkRwwkRwwk..','..kwwwwwwwwwwk..','..kwwwkkkkwwwk..','..kwwkwwwwkwwk..','..kwwwwwwwwwgk..','..kwgwwgwwwwgk..','..kggggggggggk..','...kkkkkkkkkk...']),
+  bat: makeSprite(['................','k..............k','kk............kk','kYk...kkkk...kYk','kYYk.kUUUUk.kYYk','kYOYkUkUUkUkYOYk','kYYYkURUURUkYYYk','.kYOkUUUUUUkOYk.','..kYkUkwwkUkYk..','...kkUUUUUUkk...','.....kUUUUk.....','......kkkk......']),
+  ramen: makeSprite(['...kkkkkkkkkk...','..kyyyyyyyyyyk..','..kykyykyykyyk..','.kkkkkkkkkkkkkk.','.kRRRRRRRRRRRRk.','..kwwwwwwwwwwk..','..kwkkwwwwkkwk..','..kwkRwwwwkRwk..','..kwwwwwwwwwwk..','..kRRRRRRRRRRk..','...kwwkkkkwwk...','...kwwwwwwwwk...','....kwwwwwwk....','....kkkkkkkk....']),
+  crumb: makeSprite(['..kkkk..','.kuuuuk.','kukuukuk','kuuuuuuk','kuuUUuuk','.kuuuuk.','..kkkk..']),
+  boss: makeSprite(['......kk..kk..kk......','......kYk.kYk.kYk.....','......kYYkYYYkYYk.....','......kYYYYYYYYYk.....','....kkkkkkkkkkkkkkk...','...kOOwOOOOOOOwOOOOk..','..kOOOOOOwOOOOOOOwOOk.','..kOOOOOOOOOOOOOOOOOk.','..kkkkkkkkkkkkkkkkkkk.','..klllllllllllllllllk.','..kUUkkkUUUUUUkkkUUUk.','..kUUkRkUUUUUUkRkUUUk.','..kUUUUUUUUUUUUUUUUUk.','..kUUUUkwkwkwkUUUUUUk.','..kYYYYYkkkkkkYYYYYYk.','..kOOOOOOOOOOOOOOOOOk.','...kOOOOOOOOOOOOOOOk..','....kkkkkkkkkkkkkkk...'])
+};
+const ICON = {
+  heart: makeSprite(['.kk.kk.','kRRkRRk','kRwRRRk','kRRRRRk','.kRRRk.','..kRk..','...k...']),
+  star: makeSprite(['...k...','..kYk..','kkkYkkk','kYYwYYk','.kYYYk.','.kYkYk.','kk...kk']),
+  help: makeSprite(['..kkk..','.kbbbk.','kbwbbbk','kbbbbbk','.kbbbk.','..kbk..','...k...']),
+  key: makeSprite(['.kkk.....','kYYYkkkkk','kYkYYYYYk','kYYYk.kYk','.kkk..kk.'])
+};
 
-// ---------- content ----------
+// ================= content =================
 const NUTRIENTS = [
-  { id:'carb', name:'밥알이', role:'탄수화물', at:[2,5],
-    spot:'배식대의 커다란 밥솥이다. 뚜껑이 들썩들썩한다…!',
-    hello:'나는 에너지 담당 탄수화물, 밥알이야! 공부할 힘은 내가 책임지지. 나를 데려가려면 내 문제 3개 중 2개 이상 맞혀 줘!',
-    win:'좋아, 같이 가자! 밥·빵·면·감자에서 나를 꼭 챙겨 줘!',
-    clue:'배식대 밥솥 쪽에서 고소한 냄새가 나던데?',
+  { id:'carb', name:'밥알이', role:'탄수화물',
+    win:'살았다! 나는 에너지 담당 탄수화물이야. 밥·빵·면·감자에서 나를 꼭 챙겨 줘!',
     qs:[
       { q:'탄수화물은 1g당 약 몇 kcal의 에너지를 낼까?', o:['4kcal','2kcal','7kcal','9kcal'], exp:'탄수화물과 단백질은 1g당 약 4kcal, 지방은 약 9kcal의 에너지를 내요.' },
       { q:'다음 중 탄수화물이 가장 많이 들어 있는 식품은?', o:['고구마','고등어','두부','버터'], exp:'쌀·밀 같은 곡류와 감자·고구마에 탄수화물이 많아요.' },
-      { q:'탄수화물을 필요한 양보다 많이 먹으면, 남은 것은 몸에서 어떻게 될까?', o:['지방으로 바뀌어 몸에 저장된다','땀으로 모두 빠져나간다','뼈를 만드는 데 쓰인다','모두 비타민으로 바뀐다'], exp:'쓰고 남은 탄수화물은 지방으로 바뀌어 저장되므로, 너무 많이 먹으면 비만의 원인이 돼요.' },
-      { q:'탄수화물의 한 종류인 식이섬유에 대한 설명으로 옳은 것은?', o:['장 운동을 도와 변비를 예방한다','1g당 9kcal로 에너지를 가장 많이 낸다','고기에 가장 많이 들어 있다','근육을 만드는 주재료이다'], exp:'식이섬유는 채소·과일·잡곡에 많고, 장 운동을 도와 변비 예방에 좋아요.' }
+      { q:'탄수화물을 필요한 양보다 많이 먹으면 남은 것은 몸에서 어떻게 될까?', o:['지방으로 바뀌어 몸에 저장된다','땀으로 모두 빠져나간다','뼈를 만드는 데 쓰인다','모두 비타민으로 바뀐다'], exp:'쓰고 남은 탄수화물은 지방으로 바뀌어 저장되므로, 지나치게 먹으면 비만의 원인이 돼요.' },
+      { q:'탄수화물의 한 종류인 식이섬유에 대한 설명으로 옳은 것은?', o:['장 운동을 도와 변비를 예방한다','1g당 9kcal로 에너지를 가장 많이 낸다','고기에 가장 많이 들어 있다','근육을 만드는 주재료이다'], exp:'식이섬유는 채소·과일·잡곡에 많고, 장 운동을 도와 변비 예방에 좋아요.' },
+      { q:'뇌가 주로 에너지원으로 사용하는 것은?', o:['포도당','칼슘','비타민 C','콜레스테롤'], exp:'탄수화물이 분해되어 생긴 포도당은 뇌의 주된 에너지원이에요. 그래서 아침을 거르면 집중력이 떨어져요.' },
+      { q:'탄수화물을 너무 적게 먹었을 때 나타나기 쉬운 증상은?', o:['쉽게 피로하고 집중력이 떨어진다','뼈가 더 단단해진다','시력이 좋아진다','혈압이 높아진다'], exp:'에너지가 부족해지면 쉽게 지치고 집중하기 어려워요.' }
     ]},
-  { id:'protein', name:'계란이', role:'단백질', at:[6,2],
-    spot:'주방 냉장고다. 안에서 달그락 소리가 난다…!',
-    hello:'깜짝이야! 나는 몸을 만드는 단백질, 계란이야. 근육이랑 혈액을 만들려면 내가 꼭 필요해. 내 문제를 풀어 봐!',
-    win:'성장기에는 나를 충분히! 고기·생선·달걀·콩에서 또 만나자.',
-    clue:'주방 냉장고 안이 수상해. 주방은 배식대 오른쪽 틈으로 들어갈 수 있어.',
+  { id:'protein', name:'계란이', role:'단백질',
+    win:'고마워! 나는 몸을 만드는 단백질이야. 성장기에는 고기·생선·달걀·콩으로 나를 충분히 먹어 줘!',
     qs:[
-      { q:'단백질의 주된 기능으로 알맞은 것은?', o:['근육·혈액·피부 등 몸의 조직을 만든다','에너지를 전혀 내지 않는다','기름에 녹아 시력만 지켜 준다','소금 맛을 낸다'], exp:'단백질은 근육·혈액·피부·효소·항체 등을 만드는 구성 영양소예요. 1g당 4kcal의 에너지도 내요.' },
+      { q:'단백질의 주된 기능으로 알맞은 것은?', o:['근육·혈액·피부 등 몸의 조직을 만든다','에너지를 전혀 내지 않는다','기름에 녹아 시력만 지켜 준다','소금 맛을 낸다'], exp:'단백질은 근육·혈액·피부·효소·항체 등을 만드는 영양소예요.' },
       { q:'단백질이 풍부한 식품끼리 바르게 묶은 것은?', o:['달걀·두부','쌀·감자','버터·식용유','사과·귤'], exp:'고기·생선·달걀·콩과 콩으로 만든 두부에 단백질이 많아요.' },
       { q:'몸에서 만들 수 없어 반드시 음식으로 먹어야 하는 단백질의 구성 성분은?', o:['필수 아미노산','포도당','식이섬유','나트륨'], exp:'단백질은 아미노산으로 이루어져 있고, 몸에서 만들 수 없는 것을 필수 아미노산이라고 해요.' },
-      { q:'성장기 청소년이 단백질을 충분히 먹지 않으면 생길 수 있는 문제는?', o:['성장이 늦어지고 면역력이 떨어진다','키가 더 빨리 큰다','충치가 바로 생긴다','혈압이 갑자기 오른다'], exp:'단백질이 부족하면 성장 지연, 면역력 저하, 빈혈 등이 생길 수 있어요.' }
+      { q:'성장기 청소년이 단백질을 충분히 먹지 않으면 생길 수 있는 문제는?', o:['성장이 늦어지고 면역력이 떨어진다','키가 더 빨리 큰다','충치가 바로 생긴다','혈압이 갑자기 오른다'], exp:'단백질이 부족하면 성장 지연, 면역력 저하 등이 생길 수 있어요.' },
+      { q:'단백질도 1g당 약 4kcal의 에너지를 낼 수 있다.', ox:true, a:'O', exp:'단백질은 몸을 구성할 뿐 아니라, 1g당 약 4kcal의 에너지도 내요.' },
+      { q:'병균과 싸우는 항체를 만드는 데 꼭 필요한 영양소는?', o:['단백질','탄수화물','물','지방'], exp:'항체·효소·호르몬도 단백질로 만들어져요.' }
     ]},
-  { id:'fat', name:'버터링', role:'지방', at:[1,2],
-    spot:'가스레인지 위 프라이팬이다. 미끌미끌한 무언가가 있다!',
-    hello:'나는 지방, 버터링이야! 에너지를 가장 많이 내지만 너무 많이 먹으면 곤란해~ 문제 나간다!',
-    win:'적당히 먹으면 나도 몸에 꼭 필요한 친구야. 잘 부탁해!',
-    clue:'주방 가스레인지 프라이팬이 미끌미끌하던데?',
+  { id:'fat', name:'버터링', role:'지방',
+    win:'후유, 살았다! 나는 지방이야. 적당히 먹으면 나도 몸에 꼭 필요한 친구라고!',
     qs:[
       { q:'지방은 1g당 약 몇 kcal의 에너지를 낼까?', o:['9kcal','4kcal','2kcal','12kcal'], exp:'지방은 1g당 약 9kcal로, 같은 양일 때 탄수화물·단백질보다 두 배 넘는 에너지를 내요.' },
-      { q:'지방의 기능이 아닌 것은?', o:['혈액 속 헤모글로빈을 만든다','체온을 유지한다','내장 기관을 보호한다','지용성 비타민의 흡수를 돕는다'], exp:'헤모글로빈을 만드는 것은 무기질인 철이에요. 지방은 체온 유지, 장기 보호, 지용성 비타민 흡수를 도와요.' },
+      { q:'지방의 기능이 아닌 것은?', o:['혈액 속 헤모글로빈을 만든다','체온을 유지한다','내장 기관을 보호한다','지용성 비타민의 흡수를 돕는다'], exp:'헤모글로빈을 만드는 것은 무기질인 철이에요.' },
       { q:'지방은 몸에 나쁘기 때문에 전혀 먹지 않는 것이 좋다.', ox:true, a:'X', exp:'필수 지방산처럼 꼭 필요한 지방도 있어요. 적당히 먹되, 지나치면 비만·심혈관 질환의 원인이 돼요.' },
-      { q:'동물성 지방(포화 지방)을 지나치게 많이 먹을 때 생길 수 있는 문제는?', o:['비만과 심혈관 질환','야맹증','괴혈병','구루병'], exp:'포화 지방을 많이 먹으면 혈중 콜레스테롤이 높아져 비만·심혈관 질환 위험이 커져요.' }
+      { q:'동물성 지방(포화 지방)을 지나치게 많이 먹을 때 생길 수 있는 문제는?', o:['비만과 심혈관 질환','야맹증','괴혈병','구루병'], exp:'포화 지방을 많이 먹으면 혈중 콜레스테롤이 높아져 심혈관 질환 위험이 커져요.' },
+      { q:'다음 중 지방이 많이 들어 있는 식품은?', o:['버터·견과류','오이·상추','쌀·보리','사과·배'], exp:'버터, 식용유, 견과류, 기름진 고기에 지방이 많아요.' },
+      { q:'튀김처럼 기름을 많이 쓴 음식을 자주 먹으면 어떤 문제가 생기기 쉬울까?', o:['에너지를 너무 많이 섭취해 비만이 되기 쉽다','비타민 C가 넘쳐 괴혈병이 생긴다','물이 부족해 탈수가 생긴다','칼슘이 늘어 뼈가 지나치게 커진다'], exp:'지방은 에너지가 높아서 튀김을 자주 먹으면 에너지 과잉으로 비만이 되기 쉬워요.' }
     ]},
-  { id:'mineral', name:'미네짱', role:'무기질', at:[1,8],
-    spot:'우유 상자다. 우유팩 사이에서 무언가 반짝인다!',
-    hello:'나는 뼈와 피를 지키는 무기질, 미네짱! 칼슘, 철, 나트륨, 요오드… 친구가 아주 많지. 맞혀 볼래?',
-    win:'우유랑 멸치 먹을 때마다 나를 떠올려 줘!',
-    clue:'왼쪽 벽 우유 상자 사이를 살펴봐.',
+  { id:'mineral', name:'미네짱', role:'무기질',
+    win:'반짝! 나는 뼈와 피를 지키는 무기질이야. 칼슘, 철, 요오드… 친구가 아주 많지!',
     qs:[
       { q:'뼈와 치아를 구성하고, 부족하면 골다공증이 생길 수 있는 무기질은?', o:['칼슘','나트륨','요오드','철'], exp:'칼슘은 우유·멸치·뼈째 먹는 생선에 많아요. 뼈가 자라는 청소년기에 특히 중요해요.' },
       { q:'혈액 속 헤모글로빈을 구성하며, 부족하면 빈혈이 생기는 무기질은?', o:['철','칼슘','칼륨','나트륨'], exp:'철은 간·살코기·굴·시금치에 많아요. 비타민 C와 함께 먹으면 흡수가 잘돼요.' },
-      { q:'짜게 먹는 습관으로 나트륨을 너무 많이 먹으면 생길 수 있는 질병은?', o:['고혈압','야맹증','구루병','각기병'], exp:'나트륨은 체액 균형에 필요하지만, 지나치면 고혈압·심혈관 질환의 원인이 돼요.' },
-      { q:'미역·다시마에 많고, 갑상샘 호르몬을 만드는 무기질은?', o:['요오드','칼슘','철','나트륨'], exp:'요오드는 갑상샘 호르몬의 성분으로, 미역·김·다시마 같은 해조류에 많아요.' }
+      { q:'짜게 먹어서 나트륨을 너무 많이 먹으면 생길 수 있는 질병은?', o:['고혈압','야맹증','구루병','각기병'], exp:'나트륨은 체액 균형에 필요하지만, 지나치면 고혈압의 원인이 돼요.' },
+      { q:'미역·다시마에 많고, 갑상샘 호르몬을 만드는 무기질은?', o:['요오드','칼슘','철','나트륨'], exp:'요오드는 갑상샘 호르몬의 성분으로, 미역·김·다시마 같은 해조류에 많아요.' },
+      { q:'다음 중 칼슘을 얻기 좋은 식품이 아닌 것은?', o:['탄산음료','우유','멸치','치즈'], exp:'우유·치즈·멸치에 칼슘이 많아요. 탄산음료는 칼슘 공급원이 아니에요.' },
+      { q:'무기질은 몸의 기능을 조절하고 뼈·혈액 등을 구성한다.', ox:true, a:'O', exp:'무기질은 에너지를 내지 않지만 몸을 구성하고 기능을 조절해요.' }
     ]},
-  { id:'vitamin', name:'비타', role:'비타민', at:[12,2],
-    spot:'창가의 과일 수레다. 귤 하나가 윙크를 한다…?',
-    hello:'상큼! 나는 몸의 기능을 조절하는 비타민, 비타야. 아주 조금만 필요하지만 없으면 큰일 나! 문제 간다~',
-    win:'과일·채소를 골고루 먹으면 나를 자주 만날 수 있어!',
-    clue:'창가 과일 수레를 살펴봐.',
+  { id:'vitamin', name:'비타', role:'비타민',
+    win:'상큼! 나는 몸의 기능을 조절하는 비타민이야. 과일·채소를 골고루 먹으면 나를 자주 만날 수 있어!',
     qs:[
-      { q:'비타민 C가 부족하면 생기는 질병은?', o:['괴혈병','구루병','야맹증','각기병'], exp:'비타민 C가 부족하면 잇몸에서 피가 나는 괴혈병이 생겨요. 과일·채소에 많고 열에 약해요.' },
+      { q:'비타민 C가 부족하면 생기는 질병은?', o:['괴혈병','구루병','야맹증','각기병'], exp:'비타민 C가 부족하면 잇몸에서 피가 나는 괴혈병이 생겨요. 과일·채소에 많아요.' },
       { q:'기름에 녹는 지용성 비타민끼리 바르게 묶은 것은?', o:['A·D·E·K','B1·B2·C','A·B1·C','C·D·K'], exp:'지용성 비타민은 A·D·E·K, 수용성 비타민은 B군과 C예요.' },
       { q:'햇빛을 받으면 피부에서 만들어지고 칼슘 흡수를 돕는 비타민은?', o:['비타민 D','비타민 C','비타민 B1','비타민 A'], exp:'비타민 D가 부족하면 뼈가 약해지는 구루병이 생길 수 있어요.' },
-      { q:'비타민도 탄수화물처럼 에너지를 낸다.', ox:true, a:'X', exp:'비타민은 에너지를 내지 않고, 몸의 여러 기능을 조절하는 조절 영양소예요.' }
+      { q:'비타민도 탄수화물처럼 에너지를 낸다.', ox:true, a:'X', exp:'비타민은 에너지를 내지 않고, 몸의 여러 기능을 조절해요.' },
+      { q:'비타민 A가 부족하면 어두운 곳에서 잘 보이지 않는 이것이 생긴다.', o:['야맹증','괴혈병','각기병','빈혈'], exp:'비타민 A는 당근 같은 녹황색 채소와 간에 많아요.' },
+      { q:'비타민 B1이 부족하면 생기는 질병은?', o:['각기병','야맹증','구루병','괴혈병'], exp:'비타민 B1은 돼지고기, 현미, 콩에 많아요.' },
+      { q:'채소를 오래 삶으면 비타민 C가 많이 줄어드는 까닭은?', o:['물에 잘 녹고 열에 약하기 때문에','기름에만 녹기 때문에','열을 받으면 지방으로 바뀌기 때문에','삶으면 칼슘이 되기 때문에'], exp:'비타민 C는 수용성이고 열에 약해서, 짧게 조리하거나 생으로 먹으면 덜 줄어요.' }
     ]},
-  { id:'water', name:'퐁당이', role:'물', at:[16,2],
-    spot:'정수기다. 물방울이 똑, 똑… 말을 하는 것 같다?',
-    hello:'퐁당! 나는 물이야. 우리 몸의 대부분을 차지하지. 나 없이는 영양소들도 꼼짝 못 해! 문제 풀어 볼래?',
-    win:'목마르기 전에 조금씩 자주 마셔 줘!',
-    clue:'정수기 쪽에서 똑똑 소리가 나.',
+  { id:'water', name:'퐁당이', role:'물',
+    win:'퐁당! 나는 물이야. 우리 몸의 대부분을 차지하지. 목마르기 전에 조금씩 자주 마셔 줘!',
     qs:[
       { q:'우리 몸에서 물이 차지하는 비율은 체중의 약 얼마일까?', o:['약 2/3','약 1/10','약 1/3','거의 전부'], exp:'물은 체중의 약 2/3(60~70%)를 차지해요.' },
-      { q:'물의 기능으로 알맞지 않은 것은?', o:['1g당 9kcal의 에너지를 낸다','영양소와 노폐물을 운반한다','땀을 통해 체온을 조절한다','소화액 등 체액을 구성한다'], exp:'물은 에너지를 내지 않아요. 운반, 체온 조절, 체액 구성 등의 일을 해요.' },
-      { q:'목이 마르지 않으면 물을 마시지 않아도 몸에 아무 문제가 없다.', ox:true, a:'X', exp:'목이 마르다고 느낄 때는 이미 수분이 부족해지기 시작한 때예요. 조금씩 자주 마셔요.' },
-      { q:'몸속 수분을 약 몇 % 잃으면 생명이 위험해질 수 있을까?', o:['약 20%','약 1%','약 5%','약 50%'], exp:'몸속 수분을 약 10% 잃으면 건강에 이상이 생기고, 약 20%를 잃으면 생명이 위험해요.' }
+      { q:'물의 기능으로 알맞지 않은 것은?', o:['1g당 9kcal의 에너지를 낸다','영양소와 노폐물을 운반한다','땀을 통해 체온을 조절한다','소화액 등 체액을 구성한다'], exp:'물은 에너지를 내지 않아요. 운반, 체온 조절, 체액 구성 같은 일을 해요.' },
+      { q:'목이 마르지 않으면 물을 마시지 않아도 몸에 아무 문제가 없다.', ox:true, a:'X', exp:'목이 마르다고 느낄 때는 이미 수분이 부족해지기 시작한 때예요.' },
+      { q:'몸속 수분을 약 몇 % 잃으면 생명이 위험해질 수 있을까?', o:['약 20%','약 1%','약 5%','약 50%'], exp:'몸속 수분을 약 10% 잃으면 건강에 이상이 생기고, 약 20%를 잃으면 생명이 위험해요.' },
+      { q:'물을 마시는 습관으로 가장 바람직한 것은?', o:['갈증을 느끼기 전에 조금씩 자주 마신다','하루에 한 번 몰아서 많이 마신다','물 대신 탄산음료를 마신다','밥 먹을 때만 마신다'], exp:'물은 조금씩 자주 마시는 것이 좋고, 단 음료보다 물이 좋아요.' }
     ]}
 ];
-const FINAL_TEEN = [
-  { q:'청소년기에 영양 섭취가 특히 중요한 까닭으로 가장 알맞은 것은?', o:['키와 몸무게가 빠르게 자라는 제2의 급성장기이기 때문에','활동량이 줄어 에너지가 거의 필요 없기 때문에','성장이 이미 다 끝났기 때문에','영양소가 몸에 저장되지 않기 때문에'], exp:'청소년기는 제2의 급성장기이자 2차 성징이 나타나는 시기라 에너지·단백질·칼슘·철이 더 많이 필요해요.' },
-  { q:'월경을 시작한 여학생이 특히 신경 써서 섭취해야 하는 무기질은?', o:['철','나트륨','요오드','인'], exp:'월경으로 혈액이 빠져나가므로 철을 충분히 섭취해야 빈혈을 예방할 수 있어요.' }
+const GENERAL = [
+  { q:'에너지를 내는 영양소끼리 바르게 묶은 것은?', o:['탄수화물·단백질·지방','비타민·무기질·물','탄수화물·비타민·물','무기질·지방·물'], exp:'탄수화물·단백질·지방은 에너지를 내는 영양소예요.' },
+  { q:'몸의 여러 기능을 조절하는 영양소끼리 묶은 것은?', o:['무기질·비타민·물','탄수화물·지방','단백질·지방','탄수화물·단백질'], exp:'무기질·비타민·물은 에너지는 내지 않지만 몸의 기능을 조절해요.' },
+  { q:'같은 양을 먹었을 때 에너지를 가장 많이 내는 영양소는?', o:['지방','탄수화물','단백질','비타민'], exp:'지방은 1g당 약 9kcal로 가장 많은 에너지를 내요.' },
+  { q:'한 가지 식품만 먹어도 필요한 영양소를 모두 얻을 수 있다.', ox:true, a:'X', exp:'모든 영양소를 다 가진 식품은 없어서 여러 식품을 골고루 먹어야 해요.' },
+  { q:'비타민과 무기질은 에너지를 내지 않지만 꼭 필요하다.', ox:true, a:'O', exp:'적은 양이 필요하지만, 부족하면 결핍증이 생겨요.' },
+  { q:'콩으로 만든 두부는 어느 식품군에 속할까?', o:['고기·생선·달걀·콩류','채소류','곡류','우유·유제품류'], exp:'콩과 두부는 단백질이 풍부해서 고기·생선·달걀·콩류에 속해요.' },
+  { q:'감자와 고구마는 어느 식품군에 속할까?', o:['곡류','채소류','과일류','유지·당류'], exp:'감자·고구마는 탄수화물이 많아 곡류에 속해요.' },
+  { q:'미역과 김 같은 해조류는 어느 식품군에 속할까?', o:['채소류','고기·생선·달걀·콩류','곡류','과일류'], exp:'해조류는 채소류에 속해요.' }
 ];
-const FINAL_BIKE = [
-  { q:'식품구성자전거에서 앞바퀴가 나타내는 것은?', o:['물','곡류','우유','과일'], exp:'앞바퀴의 물은 충분한 수분 섭취가 중요하다는 뜻이에요.' },
-  { q:'식품구성자전거의 뒷바퀴에서 가장 넓은 면적을 차지하는 식품군은?', o:['곡류','고기·생선·달걀·콩류','과일류','우유·유제품류'], exp:'면적이 넓을수록 더 자주 먹어야 한다는 뜻이에요. 곡류가 가장 넓어요.' },
-  { q:'식품구성자전거에서 사람이 페달을 밟고 있는 모습이 뜻하는 것은?', o:['균형 잡힌 식사와 함께 규칙적인 운동이 필요하다','음식은 빨리 먹어야 한다','자전거로 음식을 배달해야 한다','운동하면 간식을 많이 먹어도 된다'], exp:'자전거가 굴러가려면 운동이 필요해요. 골고루 먹고 꾸준히 운동해야 건강해요.' }
-];
-const FINAL_CASES = [
-  { who:'민준', say:'아침은 늘 거르고, 점심이랑 저녁에 엄청 많이 먹어요. 오전 수업 시간엔 계속 졸려요.',
-    q:'민준이에게 해 줄 조언으로 가장 알맞은 것은?', o:['간단하게라도 아침을 먹고, 끼니를 규칙적으로 먹는다','점심까지 거르면 살이 빠지니 괜찮다','오전에 에너지 음료를 마신다','저녁에 한꺼번에 몰아서 먹는다'], exp:'아침 결식은 오전 집중력을 떨어뜨리고 다음 끼니의 폭식으로 이어져 비만의 원인이 될 수 있어요.' },
-  { who:'서연', say:'요즘 자주 어지럽고, 계단만 올라가도 숨이 차요. 얼굴이 창백하대요.',
-    q:'서연이에게 의심되는 문제와 도움이 되는 음식을 바르게 짝지은 것은?', o:['철 결핍성 빈혈 – 살코기·간·시금치','비만 – 탄산음료','골다공증 – 감자튀김','괴혈병 – 버터·식용유'], exp:'철이 부족하면 빈혈이 생겨요. 철이 많은 음식을 비타민 C가 많은 과일과 함께 먹으면 흡수가 잘돼요.' },
-  { who:'지호', say:'친구들은 너무 말랐다는데, 거울을 보면 뚱뚱해 보여요. 그래서 거의 안 먹어요.',
-    q:'지호에게 의심되는 문제와 알맞은 대처는?', o:['섭식 장애 – 보호자·전문가와 상담한다','단순한 편식 – 그냥 두면 된다','비만 – 더 굶어야 한다','비타민 부족 – 영양제만 먹으면 된다'], exp:'체형을 왜곡해서 인식하고 음식을 거부하는 것은 섭식 장애(신경성 식욕 부진증)일 수 있어요. 혼자 해결하기보다 도움을 받아야 해요.' },
-  { who:'하은', say:'학원 가느라 매일 편의점에서 컵라면이랑 탄산음료로 저녁을 해결해요.',
-    q:'하은이의 식습관에서 가장 걱정되는 점은?', o:['나트륨과 당을 너무 많이 먹어 비만·고혈압 위험이 커진다','단백질을 너무 많이 먹게 된다','칼슘을 너무 많이 먹게 된다','비타민 C를 너무 많이 먹게 된다'], exp:'가공식품은 나트륨·당·지방이 많아요. 영양성분표시를 확인하고 우유·과일·채소를 곁들여 보세요.' }
+const TEEN = [
+  { q:'청소년기에 영양 섭취가 특히 중요한 까닭으로 가장 알맞은 것은?', o:['키와 몸무게가 빠르게 자라는 제2의 급성장기이기 때문에','활동량이 줄어 에너지가 거의 필요 없기 때문에','성장이 이미 다 끝났기 때문에','영양소가 몸에 저장되지 않기 때문에'], exp:'청소년기는 급성장과 2차 성징이 나타나는 시기라 에너지·단백질·칼슘·철이 더 많이 필요해요.' },
+  { q:'월경을 시작한 여학생이 특히 신경 써서 섭취해야 하는 무기질은?', o:['철','나트륨','요오드','인'], exp:'월경으로 혈액이 빠져나가므로 철을 충분히 섭취해야 빈혈을 예방할 수 있어요.' },
+  { q:'뼈가 빠르게 자라는 청소년기에 특히 충분히 먹어야 하는 무기질은?', o:['칼슘','나트륨','요오드','칼륨'], exp:'칼슘은 뼈와 치아를 만들어요. 우유·멸치·치즈로 챙겨요.' },
+  { ctx:'민준: "아침은 늘 거르고, 점심이랑 저녁에 엄청 많이 먹어요. 오전 수업 시간엔 계속 졸려요."', q:'민준이에게 해 줄 조언으로 가장 알맞은 것은?', o:['간단하게라도 아침을 먹고, 끼니를 규칙적으로 먹는다','점심까지 거르면 살이 빠지니 괜찮다','오전에 에너지 음료를 마신다','저녁에 한꺼번에 몰아서 먹는다'], exp:'아침 결식은 오전 집중력을 떨어뜨리고 다음 끼니의 폭식으로 이어져 비만의 원인이 될 수 있어요.' },
+  { ctx:'서연: "요즘 자주 어지럽고, 계단만 올라가도 숨이 차요. 얼굴이 창백하대요."', q:'서연이에게 의심되는 문제와 도움이 되는 음식을 바르게 짝지은 것은?', o:['철 결핍성 빈혈 – 살코기·간·시금치','비만 – 탄산음료','골다공증 – 감자튀김','괴혈병 – 버터·식용유'], exp:'철이 많은 음식을 비타민 C가 많은 과일과 함께 먹으면 흡수가 잘돼요.' },
+  { ctx:'지호: "친구들은 너무 말랐다는데, 거울을 보면 뚱뚱해 보여요. 그래서 거의 안 먹어요."', q:'지호에게 의심되는 문제와 알맞은 대처는?', o:['섭식 장애 – 보호자·전문가와 상담한다','단순한 편식 – 그냥 두면 된다','비만 – 더 굶어야 한다','비타민 부족 – 영양제만 먹으면 된다'], exp:'체형을 왜곡해서 인식하고 음식을 거부하는 것은 섭식 장애(신경성 식욕 부진증)일 수 있어요. 도움을 받아야 해요.' },
+  { ctx:'하은: "학원 가느라 매일 편의점에서 컵라면이랑 탄산음료로 저녁을 해결해요."', q:'하은이의 식습관에서 가장 걱정되는 점은?', o:['나트륨과 당을 너무 많이 먹어 비만·고혈압 위험이 커진다','단백질을 너무 많이 먹게 된다','칼슘을 너무 많이 먹게 된다','비타민 C를 너무 많이 먹게 된다'], exp:'가공식품은 나트륨·당·지방이 많아요. 영양 표시를 확인하고 우유·과일·채소를 곁들여 보세요.' },
+  { ctx:'도윤: "밤 11시만 되면 배가 고파서 치킨이나 라면을 시켜 먹어요. 아침엔 입맛이 없어요."', q:'도윤이의 야식 습관이 불러올 수 있는 문제로 알맞지 않은 것은?', o:['키가 더 빨리 자란다','잠을 깊이 자기 어렵다','아침을 거르게 된다','비만이 되기 쉽다'], exp:'잦은 야식은 수면을 방해하고 아침 결식, 비만으로 이어지기 쉬워요.' },
+  { ctx:'유나: "채소는 냄새가 싫어서 하나도 안 먹어요. 고기랑 밥만 먹어요."', q:'유나처럼 채소를 전혀 먹지 않으면 부족해지기 쉬운 것은?', o:['비타민·무기질·식이섬유','지방','탄수화물','나트륨'], exp:'편식하면 특정 영양소가 부족해져요. 채소에는 비타민·무기질·식이섬유가 많아요.' },
+  { q:'성장기 청소년의 무리한 다이어트가 위험한 까닭으로 알맞은 것은?', o:['성장에 필요한 영양소가 부족해지고 빈혈·섭식 장애로 이어질 수 있다','키가 더 잘 크게 된다','뼈가 더 튼튼해진다','집중력이 좋아진다'], exp:'청소년기에는 굶기보다 골고루, 규칙적으로 먹고 운동하는 것이 건강한 체중 관리 방법이에요.' },
+  { q:'비만을 예방하는 생활 습관으로 가장 알맞은 것은?', o:['세끼를 규칙적으로 골고루 먹고 꾸준히 운동한다','한 끼만 많이 먹는다','단 음료로 물을 대신한다','늦은 밤에 간식을 먹고 바로 잔다'], exp:'규칙적인 식사와 신체 활동이 건강한 체중을 지키는 기본이에요.' },
+  { q:'목이 마를 때 마시기에 가장 좋은 것은?', o:['물','탄산음료','달콤한 이온 음료','에너지 음료'], exp:'단 음료는 당이 많아요. 갈증에는 물이 가장 좋아요.' }
 ];
 const GROUPS = ['곡류','고기·생선·달걀·콩류','채소류','과일류','우유·유제품류','유지·당류'];
-const FOODS = [
-  { f:'감자', g:0, tip:'감자·고구마는 곡류에 속해요.' },
-  { f:'국수', g:0, tip:'국수는 밀로 만든 곡류예요.' },
-  { f:'두부', g:1, tip:'콩으로 만든 두부는 고기·생선·달걀·콩류예요.' },
-  { f:'고등어', g:1, tip:'생선은 고기·생선·달걀·콩류예요.' },
-  { f:'시금치', g:2, tip:'시금치는 채소류예요.' },
-  { f:'미역', g:2, tip:'미역·김 같은 해조류는 채소류에 속해요.' },
-  { f:'귤', g:3, tip:'귤은 과일류예요.' },
-  { f:'치즈', g:4, tip:'치즈는 우유로 만든 우유·유제품류예요.' },
-  { f:'요구르트', g:4, tip:'요구르트는 우유·유제품류예요.' },
-  { f:'참기름', g:5, tip:'참기름 같은 기름은 유지·당류예요.' }
-];
+const RUSH_FOODS = [
+  ['쌀밥',0],['식빵',0],['감자',0],['고구마',0],['국수',0],['옥수수',0],
+  ['두부',1,'콩으로 만든 두부는 고기·생선·달걀·콩류예요.'],['고등어',1],['달걀',1],['닭고기',1],['검은콩',1],['새우',1],
+  ['시금치',2],['당근',2],['미역',2,'미역 같은 해조류는 채소류예요.'],['김',2,'김 같은 해조류는 채소류예요.'],['버섯',2,'버섯은 채소류예요.'],['오이',2],
+  ['사과',3],['귤',3],['바나나',3],['포도',3],
+  ['우유',4],['치즈',4],['요구르트',4],
+  ['참기름',5],['버터',5,'버터는 유지·당류예요.'],['설탕',5],['꿀',5],['마요네즈',5]
+].map(([f, g, tip]) => ({ f, g, tip: tip || `${f}은(는) ${GROUPS[g]}예요.` }));
 
-// ---------- state ----------
-const state = { name:'탐정', started:false, collected:[], correct:0, total:0, wrong:[], finished:false,
-  x: 10*TILE + 8, y: 12*TILE + 10, dir:'up', flip:false };
-let busy = true; // until start
+// ================= map =================
+const grid = Array.from({length:MH}, () => Array(MW).fill('#'));
+function fill(x0, y0, x1, y1, ch) { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) grid[y][x] = ch; }
+fill(1,1,11,14,','); fill(13,1,30,14,'.'); fill(32,1,38,8,':'); fill(32,10,38,14,'_'); fill(1,16,38,24,'_');
+grid[7][12] = grid[8][12] = ',';
+for (let x = 20; x <= 23; x++) grid[15][x] = '.';
+for (let x = 33; x <= 37; x++) grid[15][x] = '_';
+grid[9][35] = 'D';
+const isFloor = (x, y) => x >= 0 && y >= 0 && x < MW && y < MH && grid[y][x] !== '#' && grid[y][x] !== 'D';
+
+const objSolid = Array.from({length:MH}, () => Array(MW).fill(false));
+const OBJECTS = [];
+function obj(x, y, w, h, draw, solid = true) { OBJECTS.push({ x, y, w, h, draw }); if (solid) for (let j = y; j < y+h; j++) for (let i = x; i < x+w; i++) objSolid[j][i] = true; }
+
+// ================= state =================
+const state = {
+  name:'탐정', started:false, hearts:5, maxHearts:5, stars:0, help:0, rescued:[], correct:0, total:0, wrong:[],
+  faints:0, key:false, rushBest:0, rushDone:false, finished:false, bossAwake:false, startTime:0, endTime:0,
+  x: 22*T+8, y: 5*T+12, dir:'down', inv:0
+};
+let mode = 'title';
 const keys = { up:false, down:false, left:false, right:false };
-let history = [];
-let muted = false;
-let walkT = 0, moving = false;
+let history = [], moving = false, walkT = 0, muted = false;
 
-// ---------- map ----------
-const SOLID = Array.from({length:ROWS}, (_, y) => Array.from({length:COLS}, (_, x) => y < 2 || y === ROWS-1 || x === 0 || x === COLS-1));
-function block(x, y, w = 1, h = 1) { for (let j = y; j < y+h; j++) for (let i = x; i < x+w; i++) SOLID[j][i] = true; }
-block(1,2,2); block(3,2,2); block(5,2); block(6,2); block(7,2);
-block(1,5,6);
-block(1,8); block(12,2,2); block(16,2); block(19,2);
-block(4,7,5,2); block(12,7,5,2); block(4,10,5,2); block(12,10,5,2);
-block(20,7); block(20,12); block(1,12);
-
-const c = (tx, ty) => ({ x: tx*TILE + 8, y: ty*TILE + 8 });
-const SPOTS = [
-  { kind:'nut', id:'carb', ...c(2,5) },
-  { kind:'nut', id:'protein', ...c(6,2) },
-  { kind:'nut', id:'fat', x: 1*TILE+8, y: 2*TILE+8 },
-  { kind:'nut', id:'mineral', ...c(1,8) },
-  { kind:'nut', id:'vitamin', x: 13*TILE, y: 2*TILE+8 },
-  { kind:'nut', id:'water', ...c(16,2) },
-  { kind:'teacher', ...c(19,2) },
-  { kind:'text', ...c(4,2), lines:['반짝반짝 깨끗한 싱크대다.','여기엔 아무도 없는 것 같다.'] },
-  { kind:'text', x: 10*TILE, y: 1*TILE+12, lines:['게시판에 오늘의 식단표가 붙어 있다.','잡곡밥 · 미역국 · 고등어구이 · 시금치나물 · 배추김치 · 우유 · 귤','그런데 식단표 옆 영양소 그림이 전부 비어 있다…!'] },
-  { kind:'text', ...c(20,7), lines:['음식물 쓰레기통이다. 여기엔 없다.','잔반 남기지 않기! 먹을 만큼만 받아요.'] },
-  { kind:'text', ...c(20,12), lines:['초록초록한 화분이다. 아무것도 없다.'] },
-  { kind:'text', ...c(1,12), lines:['화분 뒤를 살펴봤지만 아무것도 없다.'] },
-  { kind:'text', x: 11*TILE, y: 13*TILE+4, lines:['급식실 출입문이다.','영양소 친구들을 모두 찾기 전까지는 나갈 수 없어!'] }
+const NPCS = [
+  { id:'teacher', name:'영양사 선생님', spr:TEACHER, tx:22, ty:3 },
+  { id:'cook', name:'조리사님', spr:COOK, tx:6, ty:4 },
+  { id:'nurse', name:'보건 선생님', spr:NURSE, tx:4, ty:18 }
 ];
+const GUARDS = [
+  { id:'g1', nut:'carb', name:'슈가 슬라임', spr:'slime', tx:16, ty:6, maxHp:4, taunt:'달콤~한 설탕 맛에 빠져 보라구!', area:'급식실 배식대 앞' },
+  { id:'g2', nut:'fat', name:'튀김 귀신', spr:'fried', tx:4, ty:11, maxHp:4, taunt:'바삭바삭! 기름에 푹 담가 주마!', area:'주방 안쪽' },
+  { id:'g3', nut:'water', name:'탄산 유령', spr:'soda', tx:29, ty:5, maxHp:4, taunt:'치이익~ 물 대신 탄산을 마셔라!', area:'급식실 창가' },
+  { id:'g4', nut:'mineral', name:'짠짠 소금괴물', spr:'salt', tx:12, ty:20, maxHp:4, taunt:'짜게, 더 짜게! 나트륨 폭탄이다!', area:'복도 왼쪽' },
+  { id:'g5', nut:'protein', name:'컵라면 골렘', spr:'ramen', tx:24, ty:22, maxHp:4, taunt:'3분이면 끝! 컵라면만 먹으면 돼!', area:'복도 가운데' },
+  { id:'g6', nut:'vitamin', name:'과자 박쥐', spr:'bat', tx:35, ty:4, maxHp:4, taunt:'채소 따위 필요 없어! 과자만 먹자!', area:'식재료 창고' }
+];
+GUARDS.forEach(g => { g.hp = g.maxHp; g.alive = true; });
+const BOSS = { id:'boss', name:'정크푸드 대마왕', spr:'boss', tx:31, ty:20, maxHp:12, hp:12, alive:false, boss:true,
+  taunt:'으하하! 결식, 야식, 편식, 무리한 다이어트… 청소년의 식습관은 내가 지배한다!' };
+const CRUMB_START = [[18,10],[22,9],[21,13],[8,9],[9,19],[18,23],[30,17],[35,12]];
+let crumbs = CRUMB_START.map(([x, y], i) => ({ x: x*T+8, y: y*T+12, vx: 0, vy: 0, t: 0, alive: true, i }));
+const STAR_POS = [[2,2],[10,2],[2,13],[9,13],[6,9],[14,2],[19,2],[28,2],[13,9],[20,6],[30,9],[25,13],[14,14],[33,2],[38,2],[33,7],[38,7],[36,11],[34,13],[3,22],[2,24],[9,23],[15,17],[19,20],[27,18],[26,23],[37,17],[37,24],[22,15],[13,4]];
+let stars = STAR_POS.map(([x, y]) => ({ x: x*T+8, y: y*T+10, got: false }));
+const HEART_POS = [[10,10],[37,13],[19,24],[30,13]];
+let heartItems = HEART_POS.map(([x, y]) => ({ x: x*T+8, y: y*T+10, got: false }));
 
-// ---------- canvas ----------
+// ================= drawing helpers =================
 const cv = document.getElementById('game');
-cv.width = W * SC; cv.height = H * SC;
+cv.width = VW * SC; cv.height = VH * SC;
 const ctx = cv.getContext('2d');
-const bg = document.createElement('canvas'); bg.width = W * SC; bg.height = H * SC;
-
+const bg = document.createElement('canvas'); bg.width = MW*T*SC; bg.height = MH*T*SC;
 function R(g, x, y, w, h, col) { g.fillStyle = col; g.fillRect(x, y, w, h); }
 function outline(g, x, y, w, h, col = PAL.k) { R(g,x,y,w,1,col); R(g,x,y+h-1,w,1,col); R(g,x,y,1,h,col); R(g,x+w-1,y,1,h,col); }
+
+// ----- furniture -----
+function stove(g, x, y) { R(g,x,y,32,16,'#5b5f73'); R(g,x,y+13,32,3,'#43465a'); R(g,x+5,y+14,2,1,'#f2b134'); R(g,x+24,y+14,2,1,'#f2b134');
+  R(g,x+2,y+2,12,10,'#3a3a4a'); R(g,x+3,y+3,10,8,'#2b2142'); R(g,x+13,y+6,6,2,PAL.k);
+  R(g,x+19,y+1,11,11,'#b8c4d6'); R(g,x+20,y+2,9,9,'#e8574a'); R(g,x+21,y+3,7,3,'#ff8a7a'); }
+function sink(g, x, y) { R(g,x,y,32,16,'#c7cede'); R(g,x,y+13,32,3,'#a9b3c8'); R(g,x+4,y+3,24,9,'#8090a8'); R(g,x+5,y+4,22,7,'#a8b6cc'); R(g,x+14,y,4,4,'#6b778f'); }
+function steel(g, x, y, w) { R(g,x,y,w,16,'#c7cede'); R(g,x,y+13,w,3,'#a9b3c8'); R(g,x,y,w,1,'#dfe6f2'); }
+function fridge(g, x, y) { R(g,x,y-12,16,28,PAL.k); R(g,x+1,y-11,14,26,'#dfe6f2'); R(g,x+1,y-1,14,1,'#a9b3c8'); R(g,x+11,y-8,2,5,'#8090a8'); R(g,x+11,y+2,2,7,'#8090a8'); R(g,x+3,y-9,3,3,'#e8574a'); R(g,x+6,y-7,3,2,'#f2b134'); }
+function island(g, x, y, w) { steel(g,x,y,w); for (let i = 0; i < w/16; i++) { R(g,x+i*16+3,y+3,10,8,'#8090a8'); R(g,x+i*16+4,y+4,8,6,['#ff9e3d','#7ed36f','#fffdf6','#e8574a','#f2b134','#b5d0ff'][i%6]); } }
+function bigpot(g, x, y) { R(g,x+1,y+2,14,13,PAL.k); R(g,x+2,y+3,12,11,'#b8c4d6'); R(g,x+2,y+3,12,3,'#e9eef8'); R(g,x,y+6,2,2,PAL.k); R(g,x+14,y+6,2,2,PAL.k); }
+function sacks(g, x, y) { for (const [dx, col] of [[1,'#f3e2c0'],[8,'#e9d3a8']]) { R(g,x+dx,y+3,8,12,PAL.k); R(g,x+dx+1,y+4,6,10,col); R(g,x+dx+2,y+8,4,2,'#c98b52'); } }
+function counter(g, x, y, w) { R(g,x,y,w,16,'#b8c4d6'); R(g,x,y,w,2,'#dfe6f2'); R(g,x,y+11,w,5,'#4fae94'); R(g,x,y+11,w,1,PAL.k);
+  const foods = ['#fffdf6','#ff9e3d','#7ed36f','#e8574a','#f2b134','#7fd1b9'];
+  for (let i = 0; i < w/16; i++) { R(g,x+i*16+2,y+2,12,8,'#8090a8'); R(g,x+i*16+3,y+3,10,6,foods[i%6]); } }
+function table(g, x, y) {
+  for (let i = 0; i < 5; i++) { R(g,x+4+i*16,y-3,8,4,'#e8574a'); R(g,x+4+i*16,y+29,8,4,'#e8574a'); R(g,x+4+i*16,y+32,8,1,'#b83b30'); }
+  R(g,x,y+1,80,30,'#9a6338'); R(g,x+1,y+2,78,27,'#e9c79a'); R(g,x+1,y+28,78,2,'#c98b52');
+  for (let i = 0; i < 4; i++) { const tx = x+5+i*19; R(g,tx,y+6,15,10,'#4fae94'); R(g,tx+1,y+7,13,8,'#bfe6d8'); R(g,tx+2,y+8,4,3,'#fffdf6'); R(g,tx+7,y+8,5,3,['#ff9e3d','#e8574a','#f2b134'][i%3]); R(g,tx+2,y+12,3,2,'#7ed36f'); R(g,tx+6,y+12,3,2,'#e8574a'); if (i%2===0) { R(g,tx+3,y+19,4,6,'#fffdf6'); R(g,tx+3,y+19,4,1,'#4fb3e8'); } } }
+function purifier(g, x, y) { R(g,x+3,y-12,10,8,'#8fdcff'); R(g,x+4,y-11,3,5,'#d6f3ff'); R(g,x+1,y-4,14,20,PAL.k); R(g,x+2,y-3,12,18,'#fffdf6'); R(g,x+3,y+1,10,6,'#d9d4e6'); R(g,x+5,y+2,2,2,'#4fb3e8'); R(g,x+9,y+2,2,2,'#e8574a'); }
+function fruitcart(g, x, y) { R(g,x+1,y+4,30,11,'#9a6338'); R(g,x+2,y+5,28,9,'#c98b52'); R(g,x+4,y+1,24,6,'#e9c79a');
+  [[6,'#ff9e3d'],[10,'#e8574a'],[14,'#ff9e3d'],[18,'#ffe58a'],[22,'#ff9e3d']].forEach(([fx, col]) => { R(g,x+fx,y-1,4,4,col); R(g,x+fx+1,y-2,1,1,'#3a8f4c'); }); }
+function crate(g, x, y) { R(g,x+1,y+3,14,12,PAL.k); R(g,x+2,y+4,12,10,'#e8574a'); R(g,x+2,y+8,12,1,'#b83b30'); for (let i = 0; i < 3; i++) { R(g,x+3+i*4,y+1,3,4,'#fffdf6'); R(g,x+3+i*4,y+1,3,1,'#4fb3e8'); } }
+function trash(g, x, y) { R(g,x+3,y+3,10,12,PAL.k); R(g,x+4,y+4,8,10,'#8090a8'); R(g,x+2,y+2,12,3,'#5b5f73'); R(g,x+6,y+7,4,4,'#7ed36f'); }
+function plant(g, x, y) { R(g,x+4,y+9,8,7,'#9a6338'); R(g,x+5,y+10,6,5,'#c98b52'); R(g,x+3,y+2,4,8,'#3a8f4c'); R(g,x+9,y+1,4,9,'#3a8f4c'); R(g,x+6,y,4,10,'#7ed36f'); R(g,x+2,y+5,3,3,'#7ed36f'); R(g,x+11,y+4,3,3,'#7ed36f'); }
+function box(g, x, y, col = '#c98b52') { R(g,x+1,y+2,14,13,PAL.k); R(g,x+2,y+3,12,11,col); R(g,x+2,y+8,12,1,'#9a6338'); R(g,x+7,y+3,2,11,'#e9c79a'); }
+function shelf(g, x, y, w) { R(g,x,y,w,16,'#7d4a22'); R(g,x+1,y+1,w-2,6,'#9a6338'); R(g,x+1,y+8,w-2,6,'#9a6338');
+  for (let i = 0; i < w/6; i++) { const cols = ['#ff9e3d','#7ed36f','#e8574a','#ffe58a','#b5d0ff']; R(g,x+2+i*6,y+2,4,5,cols[i%5]); R(g,x+3+i*6,y+9,4,5,cols[(i+2)%5]); } }
+function freezer(g, x, y) { R(g,x,y,16,32,PAL.k); R(g,x+1,y+1,14,30,'#d6f3ff'); R(g,x+1,y+15,14,1,'#8fdcff'); R(g,x+3,y+4,10,8,'#b5e6ff'); R(g,x+3,y+19,10,8,'#b5e6ff'); }
+function bed(g, x, y) { R(g,x,y,32,16,PAL.k); R(g,x+1,y+1,30,14,'#fffdf6'); R(g,x+1,y+1,8,14,'#e9eef8'); R(g,x+10,y+1,21,14,'#b5d0ff'); R(g,x+10,y+5,21,1,'#8fb3e8'); }
+function medcab(g, x, y) { R(g,x+1,y+1,14,15,PAL.k); R(g,x+2,y+2,12,13,'#fffdf6'); R(g,x+7,y+4,2,7,'#e8574a'); R(g,x+5,y+6,6,2,'#e8574a'); }
+function bench(g, x, y, w) { R(g,x,y+5,w,7,'#9a6338'); R(g,x+1,y+6,w-2,4,'#c98b52'); R(g,x+2,y+12,2,3,PAL.k); R(g,x+w-4,y+12,2,3,PAL.k); }
+function shop(g, x, y, w) { R(g,x,y,w,16,'#e8574a'); R(g,x,y,w,4,'#fffdf6'); for (let i = 0; i < w; i += 8) R(g,x+i,y,4,4,'#e8574a');
+  for (let i = 0; i < w/12; i++) { R(g,x+3+i*12,y+6,8,8,PAL.k); R(g,x+4+i*12,y+7,6,6,['#ffe58a','#ff9ccf','#7ed36f','#ff9e3d'][i%4]); } }
+function locker(g, x, y) { R(g,x,y,16,16,'#6a8ee8'); R(g,x+1,y,1,16,'#4a6ec8'); R(g,x+8,y,1,16,'#4a6ec8'); R(g,x+3,y+3,3,1,'#2b2142'); R(g,x+10,y+3,3,1,'#2b2142'); R(g,x+5,y+8,1,2,'#fffdf6'); R(g,x+12,y+8,1,2,'#fffdf6'); }
+
+function buildObjects() {
+  // kitchen
+  obj(1,1,2,1,(g,x,y)=>stove(g,x,y)); obj(3,1,2,1,(g,x,y)=>sink(g,x,y)); obj(5,1,1,1,(g,x,y)=>{steel(g,x,y,16); R(g,x+3,y+3,10,8,'#f3cfa3');});
+  obj(7,1,1,1,(g,x,y)=>fridge(g,x,y)); obj(8,1,1,1,(g,x,y)=>fridge(g,x,y)); obj(10,1,2,1,(g,x,y)=>{steel(g,x,y,32); bigpot(g,x+1,y); bigpot(g,x+16,y);});
+  obj(3,7,6,1,(g,x,y)=>island(g,x,y,96)); obj(10,13,1,1,(g,x,y)=>sacks(g,x,y)); obj(1,13,1,1,(g,x,y)=>sacks(g,x,y)); obj(1,6,1,1,(g,x,y)=>bigpot(g,x,y));
+  // cafeteria
+  obj(14,3,6,1,(g,x,y)=>counter(g,x,y,96)); obj(30,1,1,1,(g,x,y)=>purifier(g,x,y)); obj(26,1,2,1,(g,x,y)=>fruitcart(g,x,y));
+  for (const [tx, ty] of [[14,8],[24,8],[14,11],[24,11]]) obj(tx,ty,5,2,(g,x,y)=>table(g,x,y));
+  obj(13,13,1,1,(g,x,y)=>crate(g,x,y)); obj(30,14,1,1,(g,x,y)=>trash(g,x,y)); obj(13,1,1,1,(g,x,y)=>plant(g,x,y));
+  // storage
+  obj(32,1,4,1,(g,x,y)=>shelf(g,x,y,64)); obj(37,1,2,1,(g,x,y)=>shelf(g,x,y,32)); obj(32,4,1,2,(g,x,y)=>{box(g,x,y); box(g,x,y+16,'#e9b06a');});
+  obj(38,4,1,2,(g,x,y)=>freezer(g,x,y)); obj(36,7,2,1,(g,x,y)=>{box(g,x,y,'#e9b06a'); box(g,x+16,y);});
+  obj(38,10,1,1,(g,x,y)=>box(g,x,y)); obj(32,12,1,1,(g,x,y)=>box(g,x,y,'#e9b06a'));
+  // corridor
+  obj(1,17,2,1,(g,x,y)=>bed(g,x,y)); obj(1,19,1,1,(g,x,y)=>medcab(g,x,y)); obj(1,22,1,1,(g,x,y)=>plant(g,x,y));
+  obj(28,24,8,1,(g,x,y)=>shop(g,x,y,128)); obj(38,24,1,1,(g,x,y)=>plant(g,x,y));
+  obj(14,24,4,1,(g,x,y)=>bench(g,x,y,64)); obj(6,24,3,1,(g,x,y)=>bench(g,x,y,48));
+  for (let i = 0; i < 6; i++) obj(25+i,16,1,1,(g,x,y)=>locker(g,x,y));
+}
+buildObjects();
 
 function drawStatic() {
   const g = bg.getContext('2d');
   g.setTransform(SC,0,0,SC,0,0); g.imageSmoothingEnabled = false;
-  // floor
-  for (let y = 2; y < ROWS-1; y++) for (let x = 1; x < COLS-1; x++) {
-    const px = x*TILE, py = y*TILE;
-    if (x <= 7 && y <= 5) {
-      R(g,px,py,16,16,'#e4e7f1'); R(g,px,py,16,1,'#c9cfe0'); R(g,px,py+8,16,1,'#c9cfe0'); R(g,px,py,1,16,'#c9cfe0'); R(g,px+8,py,1,16,'#c9cfe0');
+  for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) {
+    const ch = grid[y][x], px = x*T, py = y*T;
+    if (ch === '#' || (ch === 'D' && !state.key)) {
+      const below = y+1 < MH ? grid[y+1][x] : '#';
+      if (ch === 'D') {
+        R(g,px,py,16,16,'#6b4426'); R(g,px+2,py+2,12,14,'#b07a4a'); R(g,px+7,py+2,2,14,'#8e5d34'); R(g,px+11,py+8,2,2,'#f2b134');
+        R(g,px+4,py+4,8,3,'#e8574a');
+      } else if (below !== '#' && below !== 'D' && below !== undefined) {
+        if (below === ',') { R(g,px,py,16,16,'#f4f6fb'); for (let j = 0; j < 4; j++) { R(g,px,py+j*4+3,16,1,'#d5dbe8'); R(g,px+((j%2)?4:12),py+j*4,1,4,'#d5dbe8'); } R(g,px,py+14,16,2,'#a9b3c8'); }
+        else if (below === '.') { R(g,px,py,16,16,'#fbe3c4'); R(g,px,py+8,16,7,'#e8b98a'); R(g,px,py+8,16,1,'#c98b52'); R(g,px,py+14,16,2,'#9a6338'); }
+        else if (below === ':') { R(g,px,py,16,16,'#8a6a4a'); R(g,px,py+5,16,1,'#6b4f34'); R(g,px,py+10,16,1,'#6b4f34'); R(g,px,py+14,16,2,'#4f3824'); }
+        else { R(g,px,py,16,16,'#c3cbe8'); R(g,px,py+9,16,5,'#8f9cc8'); R(g,px,py+14,16,2,'#6a76a8'); }
+        R(g,px,py,16,2,'#4a3a70');
+      } else { R(g,px,py,16,16,'#4a3a70'); if ((x*3+y*5)%7 === 0) R(g,px+6,py+6,2,2,'#56457e'); }
     } else {
-      R(g,px,py,16,16,(x+y)%2 ? '#e3f1e9' : '#cfe7da');
-      R(g,px,py,16,1,'#bcd9c9'); R(g,px,py,1,16,'#bcd9c9');
-      if ((x*7+y*3)%5 === 0) R(g,px+5,py+9,2,1,'#f4fbf7');
+      const fch = ch === 'D' ? ':' : ch;
+      if (fch === ',') { R(g,px,py,16,16,'#e4e7f1'); R(g,px,py,16,1,'#c9cfe0'); R(g,px,py+8,16,1,'#c9cfe0'); R(g,px,py,1,16,'#c9cfe0'); R(g,px+8,py,1,16,'#c9cfe0'); }
+      else if (fch === '.') { R(g,px,py,16,16,(x+y)%2 ? '#e3f1e9' : '#cfe7da'); R(g,px,py,16,1,'#bcd9c9'); R(g,px,py,1,16,'#bcd9c9'); }
+      else if (fch === ':') { R(g,px,py,16,16,'#c9a27a'); for (let j = 0; j < 4; j++) { R(g,px,py+j*4+3,16,1,'#a97f57'); R(g,px+((x+j)%2 ? 5 : 11),py+j*4,1,4,'#a97f57'); } }
+      else { R(g,px,py,16,16,y%2 ? '#dcdff0' : '#d3d7ec'); R(g,px,py,16,1,'#c4c9e2'); if ((x+y)%4 === 0) R(g,px+4,py+7,3,1,'#e9ebf7'); }
     }
   }
-  // top wall
-  for (let x = 1; x < COLS-1; x++) {
-    const px = x*TILE;
-    if (x <= 7) {
-      R(g,px,0,16,32,'#f4f6fb');
-      for (let j = 0; j < 8; j++) { R(g,px,j*4+3,16,1,'#d5dbe8'); R(g,px+((j%2)?4:12),j*4,1,4,'#d5dbe8'); }
-      R(g,px,29,16,3,'#a9b3c8');
-    } else {
-      R(g,px,0,16,32,'#fbe3c4'); R(g,px,21,16,9,'#e8b98a'); R(g,px,21,16,1,'#c98b52'); R(g,px+8,22,1,8,'#d9a675'); R(g,px,30,16,2,'#9a6338');
-    }
-  }
-  R(g,0,0,W,3,'#4a3a70');
-  // side & bottom walls
-  for (const x of [0, COLS-1]) { R(g,x*TILE,0,16,H,'#4a3a70'); R(g,x === 0 ? 14 : x*TILE,0,2,H,'#5d4a8a'); }
-  R(g,0,(ROWS-1)*TILE,W,16,'#4a3a70'); R(g,16,(ROWS-1)*TILE,W-32,2,'#5d4a8a');
-  // entrance
-  R(g,160,208,32,16,'#e9eef8'); R(g,162,210,13,14,'#8fdcff'); R(g,177,210,13,14,'#8fdcff'); R(g,164,212,3,6,'#d6f3ff'); R(g,179,212,3,6,'#d6f3ff');
-  R(g,161,197,30,10,'#e8574a'); for (let i = 0; i < 5; i++) R(g,164+i*6,199,3,6,'#c9443a');
-  // windows
-  R(g,12*16+2,4,44,17,'#fffdf6'); R(g,12*16+4,6,40,13,'#8fdcff'); R(g,12*16+10,9,10,3,'#fffdf6'); R(g,12*16+13,7,6,2,'#fffdf6'); R(g,12*16+30,12,9,3,'#fffdf6');
-  R(g,12*16+23,6,2,13,'#fffdf6'); R(g,12*16+4,12,40,1,'#d6f3ff');
-  // clock
-  R(g,17*16+3,6,10,10,PAL.k); R(g,17*16+4,7,8,8,'#fffdf6'); R(g,17*16+8,8,1,4,PAL.k); R(g,17*16+8,11,3,1,PAL.k);
-  // board
-  const bx = 9*16;
-  R(g,bx+1,3,30,22,'#9a6338'); R(g,bx+3,5,26,18,'#d9a46a');
-  R(g,bx+5,7,11,13,'#fffdf6'); for (let i = 0; i < 4; i++) R(g,bx+7,10+i*3,7,1,'#b8acd8'); R(g,bx+10,6,2,2,'#e8574a');
-  R(g,bx+18,8,9,7,'#ffe58a'); R(g,bx+20,10,5,1,'#c4861a'); R(g,bx+20,12,4,1,'#c4861a'); R(g,bx+22,7,2,2,'#4fb3e8');
-  // door
-  const dx = 19*16;
-  R(g,dx+3,3,26,29,'#6b4426'); R(g,dx+5,5,22,27,'#b07a4a'); R(g,dx+15,5,2,27,'#8e5d34');
-  R(g,dx+7,7,18,8,'#fffdf6'); outline(g,dx+7,7,18,8,'#6b4426');
-  R(g,dx+12,20,2,3,'#f2b134'); R(g,dx+18,20,2,3,'#f2b134');
-  g.font = '5px "Do Hyeon", sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = PAL.k;
-  g.fillText('영양사실', dx+16, 11.5);
-  // hood above stove
-  R(g,18,8,28,14,'#b8c4d6'); R(g,20,20,24,3,'#8090a8'); R(g,18,8,28,1,'#8090a8');
-  // stove (1-2,2)
-  let x = 16, y = 32;
-  R(g,x,y,32,16,'#5b5f73'); R(g,x,y+13,32,3,'#43465a'); R(g,x+5,y+14,2,1,'#f2b134'); R(g,x+24,y+14,2,1,'#f2b134');
-  R(g,x+2,y+2,12,10,'#3a3a4a'); R(g,x+3,y+3,10,8,'#2b2142'); R(g,x+13,y+6,6,2,PAL.k);
-  R(g,x+19,y+1,11,11,'#b8c4d6'); R(g,x+20,y+2,9,9,'#e8574a'); R(g,x+21,y+3,7,3,'#ff8a7a'); R(g,x+18,y+5,1,3,'#8090a8'); R(g,x+30,y+5,1,3,'#8090a8');
-  // sink (3-4,2)
-  x = 48; R(g,x,y,32,16,'#c7cede'); R(g,x,y+13,32,3,'#a9b3c8'); R(g,x+4,y+3,24,9,'#8090a8'); R(g,x+5,y+4,22,7,'#a8b6cc'); R(g,x+14,y,4,4,'#6b778f'); R(g,x+15,y+4,2,2,'#6b778f');
-  // prep (5,2) & shelf (7,2)
-  x = 80; R(g,x,y,16,16,'#c7cede'); R(g,x,y+13,16,3,'#a9b3c8'); R(g,x+2,y+3,12,8,'#e8b98a'); R(g,x+3,y+4,10,6,'#f3cfa3'); R(g,x+5,y+6,4,1,'#7ed36f');
-  x = 112; R(g,x,y,16,16,'#c7cede'); R(g,x,y+13,16,3,'#a9b3c8'); R(g,x+2,y+2,5,10,'#fffdf6'); R(g,x+8,y+2,6,10,'#fffdf6'); R(g,x+2,y+6,5,1,'#e8574a'); R(g,x+8,y+5,6,1,'#4fb3e8');
-  // fridge (6, rows1-2)
-  x = 96; R(g,x,y-20,16,36,PAL.k); R(g,x+1,y-19,14,34,'#dfe6f2'); R(g,x+1,y-6,14,1,'#a9b3c8'); R(g,x+11,y-15,2,6,'#8090a8'); R(g,x+11,y-3,2,8,'#8090a8');
-  R(g,x+3,y-16,3,3,'#e8574a'); R(g,x+6,y-13,3,2,'#f2b134'); R(g,x+1,y+13,14,2,'#a9b3c8');
-  // serving counter (1-6, row5)
-  x = 16; y = 80;
-  R(g,x,y,96,16,'#b8c4d6'); R(g,x,y,96,2,'#dfe6f2'); R(g,x,y+11,96,5,'#4fae94'); R(g,x,y+11,96,1,'#2b2142');
-  for (let i = 0; i < 6; i++) R(g,x+i*16+15,y+12,1,4,'#3a8f7a');
-  R(g,x+2,y+2,12,2,'#7fd1b9'); R(g,x+2,y+4,12,2,'#5fb8a0'); R(g,x+2,y+6,12,2,'#7fd1b9');
-  R(g,x+17,y+1,14,10,PAL.k); R(g,x+18,y+2,12,8,'#fffdf6'); R(g,x+18,y+4,12,1,'#d9d4e6'); R(g,x+22,y+1,4,1,'#8090a8');
-  R(g,x+33,y+2,13,9,'#8090a8'); R(g,x+34,y+3,11,6,'#ff9e3d'); R(g,x+36,y+4,3,2,'#7ed36f');
-  R(g,x+49,y+2,12,8,'#8090a8'); R(g,x+50,y+3,10,6,'#7ed36f'); R(g,x+52,y+4,3,2,'#3a8f4c');
-  R(g,x+65,y+2,12,8,'#8090a8'); R(g,x+66,y+3,10,6,'#e8574a'); R(g,x+68,y+4,3,2,'#ff8a7a');
-  R(g,x+81,y+2,12,8,'#8090a8'); R(g,x+82,y+3,10,6,'#f2b134'); R(g,x+84,y+5,5,2,'#ffe58a');
-  // milk crate (1,8)
-  x = 16; y = 128;
-  R(g,x+1,y+2,14,13,PAL.k); R(g,x+2,y+3,12,11,'#e8574a'); R(g,x+2,y+8,12,1,'#b83b30');
-  for (let i = 0; i < 3; i++) { R(g,x+3+i*4,y,3,4,'#fffdf6'); R(g,x+3+i*4,y,3,1,'#4fb3e8'); }
-  // fruit cart (12-13,2)
-  x = 192; y = 32;
-  R(g,x+1,y+4,30,11,'#9a6338'); R(g,x+2,y+5,28,9,'#c98b52'); R(g,x+3,y+15,3,1,PAL.k); R(g,x+26,y+15,3,1,PAL.k);
-  R(g,x+4,y+1,24,6,'#e9c79a'); outline(g,x+4,y+1,24,6,'#9a6338');
-  const fr = [[6,'#ff9e3d'],[10,'#e8574a'],[14,'#ff9e3d'],[18,'#ffe58a'],[22,'#ff9e3d']];
-  fr.forEach(([fx,col]) => { R(g,x+fx,y-1,4,4,col); R(g,x+fx+1,y-2,1,1,'#3a8f4c'); });
-  // water purifier (16, rows1-2)
-  x = 256; y = 32;
-  R(g,x+2,y-14,12,4,PAL.k); R(g,x+3,y-18,10,8,'#8fdcff'); R(g,x+4,y-17,3,5,'#d6f3ff');
-  R(g,x+1,y-10,14,26,PAL.k); R(g,x+2,y-9,12,24,'#fffdf6'); R(g,x+3,y-4,10,7,'#d9d4e6'); R(g,x+5,y-3,2,2,'#4fb3e8'); R(g,x+9,y-3,2,2,'#e8574a');
-  R(g,x+4,y+5,8,2,'#8090a8');
-  // tables
-  for (const [tx, ty] of [[4,7],[12,7],[4,10],[12,10]]) {
-    x = tx*16; y = ty*16;
-    for (let i = 0; i < 5; i++) { R(g,x+4+i*16,y-3,8,4,'#e8574a'); R(g,x+4+i*16,y-3,8,1,'#ff8a7a'); R(g,x+4+i*16,y+29,8,4,'#e8574a'); R(g,x+4+i*16,y+32,8,1,'#b83b30'); }
-    R(g,x,y+1,80,30,'#9a6338'); R(g,x+1,y+2,78,27,'#e9c79a'); R(g,x+1,y+28,78,2,'#c98b52');
-    for (let i = 0; i < 4; i++) {
-      const trx = x + 5 + i*19, tr = (i + tx) % 3;
-      R(g,trx,y+6,15,10,'#4fae94'); R(g,trx+1,y+7,13,8,'#bfe6d8');
-      R(g,trx+2,y+8,4,3,'#fffdf6'); R(g,trx+7,y+8,5,3, tr === 0 ? '#ff9e3d' : tr === 1 ? '#e8574a' : '#f2b134');
-      R(g,trx+2,y+12,3,2,'#7ed36f'); R(g,trx+6,y+12,3,2,'#e8574a'); R(g,trx+10,y+12,3,2,'#ffe58a');
-      if (i % 2 === 0) { R(g,trx+3,y+19,4,6,'#fffdf6'); R(g,trx+3,y+19,4,1,'#4fb3e8'); }
-    }
-  }
-  // trash (20,7)
-  x = 320; y = 112;
-  R(g,x+3,y+3,10,12,PAL.k); R(g,x+4,y+4,8,10,'#8090a8'); R(g,x+2,y+2,12,3,'#5b5f73'); R(g,x+6,y+7,4,4,'#7ed36f');
-  // plants
-  for (const [px, py] of [[320,192],[16,192]]) {
-    R(g,px+4,py+9,8,7,'#9a6338'); R(g,px+5,py+10,6,5,'#c98b52');
-    R(g,px+3,py+2,4,8,'#3a8f4c'); R(g,px+9,py+1,4,9,'#3a8f4c'); R(g,px+6,py,4,10,'#7ed36f'); R(g,px+2,py+5,3,3,'#7ed36f'); R(g,px+11,py+4,3,3,'#7ed36f');
-  }
+  // wall decor
+  const wallX = (x) => x*T, wy = 0;
+  // board + windows in cafeteria wall (row 0)
+  R(g,wallX(20)+2,wy+3,28,11,'#9a6338'); R(g,wallX(20)+4,wy+4,24,9,'#d9a46a'); R(g,wallX(20)+6,wy+5,8,7,'#fffdf6'); R(g,wallX(20)+16,wy+5,9,6,'#ffe58a');
+  for (const wx of [15, 24, 28]) { R(g,wallX(wx)+1,wy+3,30,10,'#fffdf6'); R(g,wallX(wx)+2,wy+4,28,8,'#8fdcff'); R(g,wallX(wx)+15,wy+4,2,8,'#fffdf6'); R(g,wallX(wx)+5,wy+6,6,2,'#fffdf6'); }
+  // kitchen hood
+  R(g,wallX(1)+2,wy+2,28,10,'#b8c4d6'); R(g,wallX(1)+4,wy+10,24,2,'#8090a8');
+  // corridor wall signs
+  g.font = '6px "Do Hyeon", sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  const sign = (x, y, w, text, bgc = '#fffdf6', fg = PAL.k) => { R(g,x,y,w,9,PAL.k); R(g,x+1,y+1,w-2,7,bgc); g.fillStyle = fg; g.fillText(text, x + w/2, y + 5); };
+  sign(wallX(2), 15*T+3, 28, '보건실', '#fffdf6', '#e8574a');
+  sign(wallX(31), 15*T+3, 32, '매점');
+  sign(wallX(17), 15*T+3, 28, '급식실');
+  sign(wallX(5), 0*T+3, 24, '주방');
+  sign(wallX(33), 0*T+3, 28, '창고');
+  sign(wallX(33)+2, 9*T+3, 28, state.key ? '열림' : '잠김', state.key ? '#d4f3e6' : '#ffd9d3');
+  for (const o of OBJECTS) o.draw(g, o.x*T, o.y*T);
 }
 
-// ---------- rendering ----------
+// ================= collision =================
+function entityTile(tx, ty) {
+  for (const n of NPCS) if (n.tx === tx && n.ty === ty) return true;
+  for (const gd of GUARDS) if (gd.alive && gd.tx === tx && gd.ty === ty) return true;
+  if (BOSS.alive && tx >= BOSS.tx && tx <= BOSS.tx+1 && ty === BOSS.ty) return true;
+  return false;
+}
+function solidAt(px, py) {
+  const tx = Math.floor(px / T), ty = Math.floor(py / T);
+  if (tx < 0 || ty < 0 || tx >= MW || ty >= MH) return true;
+  const ch = grid[ty][tx];
+  if (ch === '#' || (ch === 'D' && !state.key)) return true;
+  return objSolid[ty][tx] || entityTile(tx, ty);
+}
+const blocked = (x, y) => solidAt(x-5,y-5) || solidAt(x+5,y-5) || solidAt(x-5,y-1) || solidAt(x+5,y-1);
+
+// ================= render =================
+let cam = { x: 0, y: 0 };
 function spriteAt(img, x, y, flip = false) {
+  x = Math.round(x - cam.x); y = Math.round(y - cam.y);
   if (flip) { ctx.save(); ctx.translate(x + img.width, y); ctx.scale(-1, 1); ctx.drawImage(img, 0, 0); ctx.restore(); }
   else ctx.drawImage(img, x, y);
 }
-function nearest() {
-  const px = state.x, py = state.y - 6; let best = null, bd = 21;
-  for (const s of SPOTS) {
-    if (s.kind === 'nut' && state.collected.includes(s.id)) continue;
-    const d = Math.hypot(s.x - px, s.y - py);
-    if (d < bd) { bd = d; best = s; }
+function RC(x, y, w, h, col) { R(ctx, Math.round(x - cam.x), Math.round(y - cam.y), w, h, col); }
+function bubble(cx, cy, r, t) {
+  for (let a = 0; a < 360; a += 8) {
+    const rad = a * Math.PI / 180;
+    RC(cx + Math.round(Math.cos(rad) * r), cy + Math.round(Math.sin(rad) * r), 1, 1, '#d6f3ff');
   }
-  return best;
+  RC(cx - r/2, cy - r/2 - 1, 2, 2, '#fffdf6');
 }
+function objective() {
+  const n = state.rescued.length;
+  if (state.finished) return { text:'모험 완료! 학교를 자유롭게 둘러보세요.', target:null };
+  if (BOSS.alive) return { text:'<b>매점 앞 정크푸드 대마왕</b>을 물리치자!', target:{ x: BOSS.tx*T+16, y: BOSS.ty*T } };
+  const left = GUARDS.filter(g => g.alive && (g.nut !== 'vitamin' || state.key));
+  if (left.length) {
+    let best = left[0], bd = Infinity;
+    for (const g of left) { const d = Math.hypot(g.tx*T - state.x, g.ty*T - state.y); if (d < bd) { bd = d; best = g; } }
+    return { text:`몬스터에게 잡힌 친구를 구하자 <b>${n}/6</b> · 가까운 곳: <b>${best.area}</b>`, target:{ x: best.tx*T+8, y: best.ty*T } };
+  }
+  if (!state.key) return { text:'창고가 잠겨 있다! <b>주방의 조리사님</b>을 도와 열쇠를 얻자.', target:{ x: 6*T+8, y: 4*T } };
+  return { text:'', target:null };
+}
+let lastGoal = '';
 function render(t) {
-  ctx.setTransform(1,0,0,1,0,0);
-  ctx.drawImage(bg, 0, 0);
+  cam.x = Math.max(0, Math.min(MW*T - VW, state.x - VW/2));
+  cam.y = Math.max(0, Math.min(MH*T - VH, state.y - 8 - VH/2));
+  ctx.setTransform(1,0,0,1,0,0); ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(bg, Math.round(cam.x)*SC, Math.round(cam.y)*SC, VW*SC, VH*SC, 0, 0, VW*SC, VH*SC);
   ctx.setTransform(SC,0,0,SC,0,0); ctx.imageSmoothingEnabled = false;
-  // sparkles on hidden nutrients
-  SPOTS.forEach((s, i) => {
-    if (s.kind !== 'nut' || state.collected.includes(s.id)) return;
-    const ph = (t/1000 + i*0.41) % 2.0;
-    if (ph < 0.7) {
-      const k = ph < 0.35 ? ph/0.35 : (0.7-ph)/0.35, len = 1 + Math.round(k*3);
-      const sx = Math.round(s.x + ((i*5)%7) - 3), sy = Math.round(s.y - 6 - ((i*3)%4));
-      R(ctx,sx,sy-len,1,len*2+1,'#fffdf6'); R(ctx,sx-len,sy,len*2+1,1,'#fffdf6'); R(ctx,sx,sy,1,1,'#f2b134');
-    }
-  });
-  // entities
+  const blink = Math.floor(t/300) % 2;
+  // items
+  stars.forEach((s, i) => { if (!s.got) spriteAt(ICON.star, s.x-3, s.y-6 - (Math.floor(t/250 + i) % 2)); });
+  heartItems.forEach((h, i) => { if (!h.got) spriteAt(ICON.heart, h.x-3, h.y-6 - (Math.floor(t/300 + i) % 2)); });
   const ents = [];
-  const tb = Math.floor(t/600) % 2;
-  ents.push({ y: 2*TILE+15, draw: () => spriteAt(TEACHER, 19*TILE+2, 2*TILE+15-18 - tb) });
-  state.collected.forEach((id, i) => {
-    const h = history[Math.min(history.length-1, (i+1)*13)] || { x: state.x, y: state.y };
-    const bob = Math.floor((t/180 + i) % 2);
-    ents.push({ y: h.y - 0.1, draw: () => spriteAt(SPR[id], Math.round(h.x - 7), Math.round(h.y - 14 - bob)) });
+  NPCS.forEach((n, i) => ents.push({ y: n.ty*T+15, draw: () => spriteAt(n.spr, n.tx*T+2, n.ty*T+15-n.spr.height - (Math.floor(t/600 + i) % 2)) }));
+  GUARDS.forEach((gd, i) => {
+    if (!gd.alive) return;
+    const m = MON[gd.spr], bob = Math.floor(t/350 + i) % 2;
+    ents.push({ y: gd.ty*T+15, draw: () => {
+      spriteAt(m, gd.tx*T + 8 - m.width/2, gd.ty*T + 15 - m.height - bob);
+      const nx = gd.tx*T + 22, ny = gd.ty*T - 4;
+      bubble(nx, ny, 10, t);
+      spriteAt(SPR[gd.nut], nx - 7, ny - 7 + (Math.floor(t/500) % 2));
+    }});
+  });
+  if (BOSS.alive) {
+    const m = MON.boss, bob = Math.floor(t/250) % 2;
+    ents.push({ y: BOSS.ty*T+15, draw: () => spriteAt(m, BOSS.tx*T + 16 - m.width/2, BOSS.ty*T + 15 - m.height - bob) });
+  }
+  crumbs.forEach(c => { if (c.alive) ents.push({ y: c.y, draw: () => spriteAt(MON.crumb, c.x-4, c.y-7 - (Math.floor(t/150 + c.i) % 2)) }); });
+  state.rescued.forEach((id, i) => {
+    const h = history[Math.min(history.length-1, (i+1)*12)] || { x: state.x, y: state.y };
+    const bob = Math.floor(t/180 + i) % 2;
+    ents.push({ y: h.y - 0.1, draw: () => spriteAt(SPR[id], h.x - 7, h.y - 14 - bob) });
   });
   const pdir = state.dir === 'left' || state.dir === 'right' ? 'side' : state.dir;
   const frame = moving ? Math.floor(walkT/160) % 2 : 0;
-  ents.push({ y: state.y, draw: () => spriteAt(PLAYER[pdir][frame], Math.round(state.x - 6), Math.round(state.y - 16 - (moving && frame ? 1 : 0)), state.dir === 'left') });
+  const hidden = state.inv > 0 && blink;
+  if (!hidden) ents.push({ y: state.y, draw: () => spriteAt(PLAYER[pdir][frame], state.x - 6, state.y - 16 - (moving && frame ? 1 : 0), state.dir === 'left') });
   ents.sort((a, b) => a.y - b.y).forEach(e => e.draw());
-  // shadow under teacher's "!" when ready
-  if (state.started && !busy && state.collected.length === 6 && !state.finished) {
-    const by = 2*TILE - 8 + (tb ? 1 : 0);
-    R(ctx,19*TILE+4,by-2,8,9,PAL.k); R(ctx,19*TILE+5,by-1,6,7,'#f2b134'); R(ctx,19*TILE+7,by,2,3,PAL.k); R(ctx,19*TILE+7,by+4,2,1,PAL.k);
-  }
-  // prompt bubble
-  const n = state.started && !busy ? nearest() : null;
+  // talk prompt
+  const n = mode === 'play' ? nearestTalk() : null;
   if (n) {
-    const bx = Math.round(state.x - 5), by = Math.round(state.y - 29 - (Math.floor(t/250)%2));
-    R(ctx,bx,by,11,10,PAL.k); R(ctx,bx+1,by+1,9,8,'#fffdf6'); R(ctx,bx+4,by+10,3,2,PAL.k);
-    R(ctx,bx+5,by+2,1,4,'#e8574a'); R(ctx,bx+4,by+2,3,3,'#e8574a'); R(ctx,bx+5,by+7,1,1,'#e8574a');
+    const bx = state.x - 5, by = state.y - 29 - (Math.floor(t/250) % 2);
+    RC(bx,by,11,10,PAL.k); RC(bx+1,by+1,9,8,'#fffdf6'); RC(bx+4,by+10,3,2,PAL.k);
+    RC(bx+3,by+4,1,1,PAL.k); RC(bx+5,by+4,1,1,PAL.k); RC(bx+7,by+4,1,1,PAL.k);
+  }
+  // objective arrow
+  const ob = objective();
+  if (ob.text !== lastGoal) { lastGoal = ob.text; document.getElementById('goal').innerHTML = ob.text; }
+  if (ob.target && mode === 'play') {
+    const sx = ob.target.x - cam.x, sy = ob.target.y - cam.y;
+    if (sx < 0 || sy < 0 || sx > VW || sy > VH) {
+      const cx = VW/2, cy = VH/2, dx = sx - cx, dy = sy - cy, s = Math.min((cx-12)/Math.abs(dx || 1), (cy-12)/Math.abs(dy || 1));
+      const ax = Math.round(cx + dx*s), ay = Math.round(cy + dy*s), ang = Math.atan2(dy, dx);
+      {
+        R(ctx, ax-5, ay-5, 10, 10, PAL.k); R(ctx, ax-4, ay-4, 8, 8, '#f2b134');
+        R(ctx, ax + Math.round(Math.cos(ang)*3) - 1, ay + Math.round(Math.sin(ang)*3) - 1, 3, 3, PAL.k);
+        R(ctx, ax - 1, ay - 1, 2, 2, '#e8574a');
+      }
+    } else {
+      const by = sy - 30 - (blink ? 2 : 0);
+      R(ctx, Math.round(sx)-3, Math.round(by), 7, 3, '#f2b134'); R(ctx, Math.round(sx)-2, Math.round(by)+3, 5, 2, '#f2b134'); R(ctx, Math.round(sx)-1, Math.round(by)+5, 3, 2, '#f2b134');
+    }
   }
 }
 
-// ---------- movement ----------
-function solidAt(px, py) {
-  const tx = Math.floor(px / TILE), ty = Math.floor(py / TILE);
-  if (tx < 0 || ty < 0 || tx >= COLS || ty >= ROWS) return true;
-  return SOLID[ty][tx];
+// ================= update =================
+function nearestTalk() {
+  const px = state.x, py = state.y - 6; let best = null, bd = 22;
+  for (const n of NPCS) { const d = Math.hypot(n.tx*T+8 - px, n.ty*T+8 - py); if (d < bd) { bd = d; best = { kind:'npc', n }; } }
+  const dd = Math.hypot(35*T+8 - px, 9*T+8 - py);
+  if (!state.key && dd < bd) { bd = dd; best = { kind:'door' }; }
+  return best;
 }
-function blocked(x, y) { return solidAt(x-5,y-5) || solidAt(x+5,y-5) || solidAt(x-5,y-1) || solidAt(x+5,y-1); }
 function update(dt) {
   moving = false;
-  if (busy) return;
+  if (mode !== 'play') return;
+  if (state.inv > 0) state.inv -= dt;
   let vx = (keys.right?1:0) - (keys.left?1:0), vy = (keys.down?1:0) - (keys.up?1:0);
-  if (!vx && !vy) return;
-  if (vx && vy) { vx *= Math.SQRT1_2; vy *= Math.SQRT1_2; }
-  if (vy < 0) state.dir = 'up'; else if (vy > 0) state.dir = 'down';
-  if (vx < 0) state.dir = 'left'; else if (vx > 0) state.dir = 'right';
-  const sp = 78 * dt;
-  const nx = state.x + vx*sp, ny = state.y + vy*sp;
-  let did = false;
-  if (!blocked(nx, state.y)) { state.x = nx; did = true; }
-  if (!blocked(state.x, ny)) { state.y = ny; did = true; }
-  if (did) {
-    moving = true; walkT += dt*1000;
-    history.unshift({ x: state.x, y: state.y });
-    if (history.length > 120) history.length = 120;
+  if (vx || vy) {
+    if (vx && vy) { vx *= Math.SQRT1_2; vy *= Math.SQRT1_2; }
+    if (vy < 0) state.dir = 'up'; else if (vy > 0) state.dir = 'down';
+    if (vx < 0) state.dir = 'left'; else if (vx > 0) state.dir = 'right';
+    const sp = 84 * dt, nx = state.x + vx*sp, ny = state.y + vy*sp;
+    let did = false;
+    if (!blocked(nx, state.y)) { state.x = nx; did = true; }
+    if (!blocked(state.x, ny)) { state.y = ny; did = true; }
+    if (did) { moving = true; walkT += dt*1000; history.unshift({ x: state.x, y: state.y }); if (history.length > 90) history.length = 90; }
   }
+  // crumbs wander
+  for (const c of crumbs) {
+    if (!c.alive) continue;
+    c.t -= dt;
+    if (c.t <= 0) { const a = Math.random() * Math.PI * 2, s = Math.random() < .25 ? 0 : 26; c.vx = Math.cos(a)*s; c.vy = Math.sin(a)*s; c.t = 1 + Math.random()*1.5; }
+    const nx = c.x + c.vx*dt, ny = c.y + c.vy*dt;
+    if (!solidAt(nx-3, ny-3) && !solidAt(nx+3, ny-3) && !solidAt(nx-3, ny) && !solidAt(nx+3, ny)) { c.x = nx; c.y = ny; } else c.t = 0;
+  }
+  // pickups
+  for (const s of stars) if (!s.got && Math.hypot(s.x - state.x, s.y - state.y + 4) < 10) { s.got = true; addStars(1); sfx.coin(); }
+  for (const h of heartItems) if (!h.got && Math.hypot(h.x - state.x, h.y - state.y + 4) < 10) {
+    h.got = true;
+    if (state.hearts < state.maxHearts) { state.hearts++; toast('급식 우유를 마셨다! 체력 +1'); } else { addStars(2); toast('체력이 가득해서 별 +2로 바꿨다!'); }
+    sfx.heal(); refreshStatus();
+  }
+  if (state.inv > 0) return;
+  // encounters
+  for (const c of crumbs) if (c.alive && Math.hypot(c.x - state.x, c.y - state.y) < 9) { startEncounter({ crumb: c }); return; }
+  for (const gd of GUARDS) if (gd.alive && Math.hypot(gd.tx*T+8 - state.x, gd.ty*T+12 - state.y) < 17) { startEncounter({ guard: gd }); return; }
+  if (BOSS.alive && Math.hypot(BOSS.tx*T+16 - state.x, BOSS.ty*T+12 - state.y) < 22) startEncounter({ boss: true });
 }
 let last = performance.now();
-function loop(t) {
-  const dt = Math.min(0.05, (t - last) / 1000); last = t;
-  update(dt); render(t);
-  requestAnimationFrame(loop);
-}
+function loop(t) { const dt = Math.min(0.05, (t - last) / 1000); last = t; update(dt); render(t); requestAnimationFrame(loop); }
 
-// ---------- sound ----------
+// ================= sound =================
 let ac = null;
 function beep(freq, dur = 0.06, type = 'square', vol = 0.04, when = 0) {
   if (muted || !ac) return;
@@ -712,322 +810,379 @@ function beep(freq, dur = 0.06, type = 'square', vol = 0.04, when = 0) {
   o.connect(gn); gn.connect(ac.destination); o.start(t0); o.stop(t0 + dur + 0.02);
 }
 const sfx = {
-  blip: () => beep(880, 0.03, 'square', 0.015),
+  blip: () => beep(880, 0.03, 'square', 0.012),
   ok: () => { beep(660,.08); beep(880,.08,'square',.04,.08); beep(1320,.14,'square',.04,.16); },
+  crit: () => { beep(523,.06); beep(784,.06,'square',.04,.05); beep(1047,.06,'square',.04,.1); beep(1568,.18,'square',.045,.15); },
   no: () => { beep(220,.12,'sawtooth',.035); beep(160,.18,'sawtooth',.035,.1); },
-  get: () => [523,659,784,1047].forEach((f,i) => beep(f,.12,'square',.045,i*.09)),
-  find: () => { beep(988,.05); beep(1319,.09,'square',.04,.06); }
+  get: () => [523,659,784,1047,1319].forEach((f,i) => beep(f,.12,'square',.045,i*.09)),
+  coin: () => { beep(988,.05,'square',.03); beep(1319,.08,'square',.03,.05); },
+  heal: () => [660,880,1100].forEach((f,i) => beep(f,.08,'triangle',.05,i*.07)),
+  enc: () => [880,660,880,660,1100].forEach((f,i) => beep(f,.06,'square',.035,i*.06)),
+  tick: () => beep(1200,.03,'square',.02)
 };
-document.getElementById('muteBtn').addEventListener('click', e => {
-  muted = !muted; e.currentTarget.textContent = muted ? '소리 꺼짐' : '소리 켜짐'; e.currentTarget.setAttribute('aria-pressed', String(muted));
-});
+document.getElementById('muteBtn').addEventListener('click', e => { muted = !muted; e.currentTarget.textContent = muted ? '소리 꺼짐' : '소리 켜짐'; e.currentTarget.setAttribute('aria-pressed', String(muted)); });
 
-// ---------- HUD ----------
+// ================= HUD =================
+function paintMini(canvas, img) { canvas.width = img.width; canvas.height = img.height; canvas.getContext('2d').drawImage(img, 0, 0); }
+paintMini(document.getElementById('icoStar'), ICON.star); paintMini(document.getElementById('icoHelp'), ICON.help);
 const hud = document.getElementById('hud');
-function paintMini(canvas, img) { canvas.width = img.width; canvas.height = img.height; const g = canvas.getContext('2d'); g.drawImage(img, 0, 0); }
-NUTRIENTS.forEach(n => {
-  const d = document.createElement('div'); d.className = 'slot'; d.dataset.id = n.id;
-  const cvs = document.createElement('canvas'); paintMini(cvs, SPR[n.id]);
-  const s = document.createElement('span'); s.textContent = n.role;
-  d.append(cvs, s); hud.append(d);
-});
+NUTRIENTS.forEach(n => { const d = document.createElement('div'); d.className = 'slot bx'; d.dataset.id = n.id; const c = document.createElement('canvas'); paintMini(c, SPR[n.id]); const s = document.createElement('span'); s.textContent = n.role; d.append(c, s); hud.append(d); });
 const parade = document.getElementById('parade');
-NUTRIENTS.forEach(n => { const cvs = document.createElement('canvas'); paintMini(cvs, SPR[n.id]); parade.append(cvs); });
-function refreshHud() {
-  hud.querySelectorAll('.slot').forEach(s => s.classList.toggle('got', state.collected.includes(s.dataset.id)));
-  const n = state.collected.length;
-  const hint = document.getElementById('hint');
-  if (state.finished) hint.innerHTML = '수사 완료! 급식실을 자유롭게 둘러보세요.';
-  else if (n === 6) hint.innerHTML = '모두 찾았다! <b>영양사실 앞 영양사 선생님</b>께 가 보자.';
-  else hint.innerHTML = `반짝이는 곳을 조사해 보자! <b>${n} / 6</b> 찾음`;
-  document.getElementById('score').textContent = `정답 ${state.correct}/${state.total}`;
+NUTRIENTS.forEach((n, i) => { const c = document.createElement('canvas'); paintMini(c, SPR[n.id]); parade.append(c); if (i === 2) { const b = document.createElement('canvas'); paintMini(b, MON.boss); b.className = 'big'; parade.append(b); } });
+function heartsInto(el) {
+  el.innerHTML = '';
+  for (let i = 0; i < state.maxHearts; i++) { const c = document.createElement('canvas'); paintMini(c, ICON.heart); c.style.width = '20px'; c.style.height = '20px'; c.style.imageRendering = 'pixelated'; if (i >= state.hearts) c.className = 'off'; el.append(c); }
 }
+function refreshStatus() {
+  heartsInto(document.getElementById('hearts'));
+  document.getElementById('starCount').textContent = state.stars;
+  document.getElementById('helpCount').textContent = state.help;
+  hud.querySelectorAll('.slot').forEach(s => s.classList.toggle('got', state.rescued.includes(s.dataset.id)));
+}
+function addStars(n) { state.stars += n; refreshStatus(); }
 let toastTimer = 0;
-function toast(msg) {
-  const el = document.getElementById('toast'); el.textContent = msg; el.hidden = false;
-  clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.hidden = true; }, 2200);
-}
+function toast(msg) { const el = document.getElementById('toast'); el.textContent = msg; el.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.hidden = true; }, 2200); }
+function hurtFx() { const s = document.getElementById('screen'); s.classList.remove('hurt'); void s.offsetWidth; s.classList.add('hurt'); }
 
-// ---------- dialog engine ----------
+// ================= dialog =================
 const modal = document.getElementById('modal');
-const els = {
-  portrait: document.getElementById('portrait'), pcv: document.getElementById('portraitCv'),
-  speaker: document.getElementById('speaker'), qtag: document.getElementById('qtag'), text: document.getElementById('dtext'),
-  extra: document.getElementById('extra'), next: document.getElementById('nextBtn'), qcount: document.getElementById('qcount')
-};
-let advance = null, typing = false, typeTimer = 0, typeFull = '', typeDone = null, choose = null;
-const ME = { name:'나', img: () => PLAYER.down[0] };
-const TEACH = { name:'영양사 선생님', img: () => TEACHER };
-const NARR = { name:'', img: null };
-function spk(n) { return { name: n.name, role: n.role, img: () => SPR[n.id] }; }
-
+const D = { portrait: document.getElementById('portrait'), pcv: document.getElementById('portraitCv'), speaker: document.getElementById('speaker'), text: document.getElementById('dtext'), next: document.getElementById('nextBtn') };
+let advance = null, typing = false, typeTimer = 0, typeFull = '', typeDone = null;
+const NARR = { name:'', img:null };
+const who = (name, img) => ({ name, img });
+const TEACH = who('영양사 선생님', TEACHER), COOKW = who('조리사님', COOK), NURSEW = who('보건 선생님', NURSE);
 function setSpeaker(sp) {
-  const img = sp.img && sp.img();
-  els.portrait.hidden = !img;
-  if (img) {
-    const g = els.pcv.getContext('2d'); els.pcv.width = 14; els.pcv.height = 18;
-    g.clearRect(0,0,14,18); g.drawImage(img, Math.floor((14-img.width)/2), Math.floor((18-img.height)/2));
-  }
-  els.speaker.hidden = !sp.name;
-  els.speaker.innerHTML = '';
-  if (sp.name) {
-    els.speaker.append(document.createTextNode(sp.name));
-    if (sp.role) { const r = document.createElement('span'); r.className = 'role'; r.textContent = sp.role; els.speaker.append(r); }
-  }
+  D.portrait.hidden = !sp.img;
+  if (sp.img) { const g = D.pcv.getContext('2d'); g.clearRect(0,0,24,24); g.drawImage(sp.img, Math.floor((24-sp.img.width)/2), Math.floor((24-sp.img.height)/2)); }
+  D.speaker.hidden = !sp.name; D.speaker.textContent = sp.name || '';
 }
-function typeText(text, done) {
-  clearInterval(typeTimer); typing = true; typeFull = text; typeDone = done; els.text.textContent = '';
+function typeText(el, text, done) {
+  clearInterval(typeTimer); typing = true; typeFull = text; typeDone = done; el.textContent = ''; typeEl = el;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { finishType(); return; }
   let i = 0;
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduce) { finishType(); return; }
-  typeTimer = setInterval(() => {
-    i++; els.text.textContent = text.slice(0, i);
-    if (i % 3 === 0) sfx.blip();
-    if (i >= text.length) finishType();
-  }, 24);
+  typeTimer = setInterval(() => { i++; el.textContent = text.slice(0, i); if (i % 3 === 0) sfx.blip(); if (i >= text.length) finishType(); }, 22);
 }
-function finishType() {
-  clearInterval(typeTimer); els.text.textContent = typeFull;
-  if (typing) { typing = false; const d = typeDone; typeDone = null; d && d(); }
-}
-function openModal() { modal.hidden = false; }
-function closeModal() { if (modal.contains(document.activeElement)) document.activeElement.blur(); modal.hidden = true; els.extra.innerHTML = ''; choose = null; advance = null; }
-function showNext(label = '다음 ▶') { els.next.hidden = false; els.next.textContent = label; els.next.focus({ preventScroll: true }); }
-
-function say(sp, text, opts = {}) {
+let typeEl = null;
+function finishType() { clearInterval(typeTimer); if (typeEl) typeEl.textContent = typeFull; if (typing) { typing = false; const d = typeDone; typeDone = null; d && d(); } }
+function say(sp, text) {
   return new Promise(res => {
-    openModal(); setSpeaker(sp); els.qtag.hidden = true; els.extra.innerHTML = ''; els.qcount.textContent = opts.count || '';
-    choose = null; els.next.hidden = false; els.next.textContent = '다음 ▶';
+    mode = 'dialog'; modal.hidden = false; setSpeaker(sp);
+    D.next.hidden = false;
     advance = () => { if (typing) { finishType(); return; } advance = null; res(); };
-    typeText(text, () => showNext());
+    typeText(D.text, text, () => D.next.focus({ preventScroll: true }));
   });
 }
+function closeModal() { if (modal.contains(document.activeElement)) document.activeElement.blur(); modal.hidden = true; advance = null; mode = 'play'; }
+async function talk(sp, lines) { for (const l of lines) await say(sp, l); closeModal(); }
+D.next.addEventListener('click', () => advance && advance());
+D.text.addEventListener('click', () => advance && advance());
 function shuffle(a) { a = a.slice(); for (let i = a.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
-function ask(sp, q, opts = {}) {
-  return new Promise(res => {
-    openModal(); setSpeaker(sp); els.extra.innerHTML = ''; els.qcount.textContent = opts.count || '';
-    els.qtag.hidden = false; els.qtag.textContent = opts.tag || 'QUIZ';
-    els.next.hidden = true; advance = () => { if (typing) finishType(); };
-    const box = document.createElement('div'); box.className = 'choices' + (q.ox ? ' ox' : '');
-    const correctText = q.ox ? q.a : q.o[0];
-    const options = q.ox ? ['O','X'] : shuffle(q.o);
-    const btns = options.map((txt, i) => {
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'choice';
-      if (!q.ox) { const nm = document.createElement('span'); nm.className = 'num'; nm.textContent = i+1; b.append(nm); }
-      b.append(document.createTextNode(txt));
-      b.addEventListener('click', () => pick(i));
-      box.append(b); return b;
-    });
-    els.extra.append(box);
-    let picked = false;
-    function pick(i) {
-      if (picked) return; picked = true; finishType(); choose = null;
-      const ok = options[i] === correctText;
-      btns.forEach((b, j) => { b.disabled = true; if (options[j] === correctText) b.classList.add('ok'); else if (j === i) b.classList.add('no'); });
-      state.total++; if (ok) state.correct++; else state.wrong.push({ q: q.q, a: correctText, exp: q.exp });
-      refreshHud(); ok ? sfx.ok() : sfx.no();
-      const fb = document.createElement('div'); fb.className = 'feedback ' + (ok ? 'ok' : 'no');
-      const head = document.createElement('b'); head.textContent = ok ? '정답이야!' : `아쉬워! 정답은 '${correctText}'`;
-      fb.append(head, document.createElement('br'), document.createTextNode(q.exp));
-      els.extra.append(fb);
-      advance = () => { advance = null; res(ok); };
-      showNext();
+// ================= battle =================
+const B = {
+  ov: document.getElementById('battle'), enemy: document.getElementById('bEnemy'), ecv: document.getElementById('bEnemyCv'), name: document.getElementById('bName'),
+  hp: document.getElementById('bHp'), hpl: document.getElementById('bHpLabel'), line: document.getElementById('bLine'), timer: document.getElementById('bTimer'), time: document.getElementById('bTime'),
+  tag: document.getElementById('bTag'), ctx: document.getElementById('bCtx'), q: document.getElementById('bQ'), choices: document.getElementById('bChoices'), fb: document.getElementById('bFb'),
+  hearts: document.getElementById('bHearts'), help: document.getElementById('bHelp'), run: document.getElementById('bRun'), next: document.getElementById('bNext')
+};
+let battleChoose = null, battleNext = null, battleHelp = null, battleRun = null;
+function popDmg(text, crit) { const d = document.createElement('span'); d.className = 'dmg' + (crit ? ' crit' : ''); d.textContent = text; B.enemy.append(d); setTimeout(() => d.remove(), 900); }
+function anim(cls) { B.enemy.classList.remove('hit', 'atk'); void B.enemy.offsetWidth; B.enemy.classList.add(cls); }
+function battle(en) {
+  // en: { name, sub, img, hp, maxHp, bank, taunt, crumb, boss, tag }
+  return new Promise(resolve => {
+    mode = 'battle'; B.ov.hidden = false;
+    const g = B.ecv.getContext('2d'); B.ecv.width = 24; B.ecv.height = 24; g.clearRect(0,0,24,24); g.drawImage(en.img, Math.floor((24-en.img.width)/2), Math.floor((24-en.img.height)/2));
+    B.name.innerHTML = ''; B.name.append(document.createTextNode(en.name)); if (en.sub) { const s = document.createElement('small'); s.textContent = en.sub; B.name.append(s); }
+    B.line.textContent = `"${en.taunt}"`;
+    B.run.hidden = !!en.noRun;
+    let queue = shuffle(en.bank), timerId = 0, start = 0, limit = 15, answered = false, cur = null, opts = [], btns = [];
+    const paintHp = () => { B.hp.style.width = Math.max(0, en.hp / en.maxHp * 100) + '%'; B.hpl.textContent = `HP ${Math.max(0, en.hp)} / ${en.maxHp}`; };
+    const paintHelp = () => { B.help.textContent = `도움 요청 ×${state.help}`; B.help.disabled = state.help <= 0 || answered || !cur || cur.ox; };
+    paintHp(); heartsInto(B.hearts);
+    function finish(result) {
+      clearInterval(timerId); battleChoose = battleNext = battleHelp = battleRun = null;
+      if (B.ov.contains(document.activeElement)) document.activeElement.blur();
+      B.ov.hidden = true; resolve(result);
     }
-    choose = (i) => { if (i < btns.length) pick(i); };
-    typeText(q.q, () => {});
-  });
-}
-
-// ---------- puzzle ----------
-function sortPuzzle() {
-  return new Promise(res => {
-    openModal(); setSpeaker(TEACH); els.qtag.hidden = false; els.qtag.textContent = 'MISSION 2 · 식품군 분류';
-    els.qcount.textContent = ''; els.next.hidden = true; choose = null;
-    els.text.textContent = '오늘 들어온 식재료를 6가지 식품군으로 나눠 줘! 식재료를 먼저 누르고, 들어갈 식품군 칸을 눌러.';
-    advance = null; typing = false;
-    els.extra.innerHTML = '';
-    const foodsBox = document.createElement('div'); foodsBox.className = 'pz-foods';
-    const binsBox = document.createElement('div'); binsBox.className = 'bins';
-    const msg = document.createElement('p'); msg.className = 'pz-msg'; msg.textContent = '남은 식재료: ' + FOODS.length + '개';
-    let sel = null; const missed = new Set(); let left = FOODS.length;
-    const chips = shuffle(FOODS).map(fd => {
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = fd.f;
-      b.addEventListener('click', () => { chips.forEach(x => x.el.classList.remove('sel')); sel = item; b.classList.add('sel'); sfx.blip(); });
-      const item = { fd, el: b }; foodsBox.append(b); return item;
-    });
-    const bins = GROUPS.map((gname, gi) => {
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'bin';
-      const t = document.createElement('span'); t.className = 'bt'; t.textContent = gname;
-      const items = document.createElement('span'); items.className = 'bin-items';
-      b.append(t, items);
-      b.addEventListener('click', () => {
-        if (!sel) { msg.textContent = '먼저 위에서 식재료를 하나 골라 줘!'; return; }
-        const it = sel;
-        if (it.fd.g === gi) {
-          const tag = document.createElement('span'); tag.textContent = it.fd.f; items.append(tag);
-          it.el.remove(); sel = null; left--;
-          if (!missed.has(it.fd.f)) { state.correct++; } state.total++;
-          b.classList.add('flash'); setTimeout(() => b.classList.remove('flash'), 300);
-          sfx.find(); msg.textContent = `딩동! ${it.fd.tip}` + (left ? ` (남은 식재료 ${left}개)` : '');
-          refreshHud();
-          if (!left) {
-            sfx.ok();
-            const done = document.createElement('button'); done.type = 'button'; done.className = 'pbtn'; done.textContent = '분류 완료! ▶';
-            msg.after(done);
-            done.addEventListener('click', () => res());
-            done.focus({ preventScroll: true });
-            advance = () => res();
-          }
-        } else {
-          if (!missed.has(it.fd.f)) { missed.add(it.fd.f); state.wrong.push({ q: `'${it.fd.f}'은(는) 어느 식품군일까?`, a: GROUPS[it.fd.g], exp: it.fd.tip }); }
-          it.el.classList.remove('shake'); void it.el.offsetWidth; it.el.classList.add('shake');
-          sfx.no(); msg.textContent = `음… '${it.fd.f}'은(는) ${gname}이(가) 아니야. 다시 골라 봐!`;
-        }
+    function ask() {
+      answered = false; cur = queue.shift(); queue.push(cur);
+      B.fb.hidden = true; B.next.hidden = true; B.choices.innerHTML = '';
+      B.tag.textContent = en.tag || '퀴즈 배틀';
+      B.ctx.hidden = !cur.ctx; B.ctx.textContent = cur.ctx || '';
+      B.choices.className = 'choices' + (cur.ox ? ' ox' : '');
+      opts = cur.ox ? ['O','X'] : shuffle(cur.o);
+      const correct = cur.ox ? cur.a : cur.o[0];
+      btns = opts.map((txt, i) => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'choice';
+        if (!cur.ox) { const n = document.createElement('span'); n.className = 'num'; n.textContent = i + 1; b.append(n); }
+        b.append(document.createTextNode(txt)); b.addEventListener('click', () => pick(i)); B.choices.append(b); return b;
       });
-      binsBox.append(b); return b;
-    });
-    els.extra.append(foodsBox, binsBox, msg);
+      B.q.textContent = cur.q;
+      limit = en.boss && en.hp <= en.maxHp / 2 ? 10 : 15;
+      start = performance.now(); B.timer.classList.remove('warn');
+      clearInterval(timerId);
+      let lastSec = limit;
+      timerId = setInterval(() => {
+        const el = (performance.now() - start) / 1000, left = Math.max(0, limit - el);
+        B.time.style.width = (left / limit * 100) + '%';
+        B.timer.classList.toggle('warn', left < 4);
+        if (Math.ceil(left) < lastSec && left < 4) { lastSec = Math.ceil(left); sfx.tick(); }
+        if (left <= 0) pick(-1);
+      }, 100);
+      paintHelp();
+      battleChoose = (i) => { if (i < btns.length) pick(i); };
+      function pick(i) {
+        if (answered) return; answered = true; clearInterval(timerId); battleChoose = null;
+        const el = (performance.now() - start) / 1000;
+        const ok = i >= 0 && opts[i] === correct;
+        btns.forEach((b, j) => { b.disabled = true; if (opts[j] === correct) b.classList.add('ok'); else if (j === i) b.classList.add('no'); });
+        state.total++;
+        const fb = B.fb; fb.hidden = false; fb.className = 'feedback ' + (ok ? 'ok' : 'no'); fb.innerHTML = '';
+        const head = document.createElement('b');
+        if (ok) {
+          state.correct++;
+          const crit = el <= 6, dmg = crit ? 2 : 1;
+          en.hp -= dmg; anim('hit'); popDmg(crit ? `-${dmg} CRITICAL!` : `-${dmg}`, crit); crit ? sfx.crit() : sfx.ok();
+          head.textContent = crit ? `크리티컬! ${el.toFixed(1)}초 만에 정답!` : '정답! 공격 성공!';
+        } else {
+          state.wrong.push({ q: cur.q, a: correct, exp: cur.exp });
+          state.hearts--; anim('atk'); sfx.no(); hurtFx();
+          head.textContent = i < 0 ? `시간 초과! 정답은 '${correct}'` : `앗, 공격당했다! 정답은 '${correct}'`;
+        }
+        fb.append(head, document.createElement('br'), document.createTextNode(cur.exp));
+        paintHp(); heartsInto(B.hearts); refreshStatus(); paintHelp();
+        B.next.hidden = false; B.next.textContent = en.hp <= 0 ? '승리! ▶' : state.hearts <= 0 ? '쓰러졌다… ▶' : '다음 문제 ▶';
+        B.next.focus({ preventScroll: true });
+        battleNext = () => { battleNext = null; if (en.hp <= 0) finish('win'); else if (state.hearts <= 0) finish('lose'); else ask(); };
+      }
+      battleHelp = () => {
+        if (answered || cur.ox || state.help <= 0) return;
+        state.help--; refreshStatus();
+        const wrongIdx = shuffle(opts.map((o, j) => j).filter(j => opts[j] !== correct)).slice(0, 2);
+        wrongIdx.forEach(j => { btns[j].disabled = true; btns[j].classList.add('gone'); });
+        sfx.heal(); paintHelp();
+      };
+    }
+    battleRun = () => { if (!answered) state.total += 0; finish('run'); };
+    ask();
+  });
+}
+B.next.addEventListener('click', () => battleNext && battleNext());
+B.help.addEventListener('click', () => battleHelp && battleHelp());
+B.run.addEventListener('click', () => battleRun && battleRun());
+
+async function startEncounter(e) {
+  mode = 'busy'; for (const k in keys) keys[k] = false;
+  sfx.enc();
+  if (e.crumb) {
+    const c = e.crumb;
+    const bank = shuffle([...GENERAL, ...TEEN.filter(q => !q.ctx)]).slice(0, 1);
+    const r = await battle({ name:'과자 부스러기', sub:'떠돌이 몬스터', img: MON.crumb, hp:1, maxHp:1, bank, taunt:'부스럭부스럭! 문제 하나 맞혀 봐!', tag:'돌발 퀴즈' });
+    c.alive = false;
+    if (r === 'win') { addStars(3); toast('부스러기를 물리쳤다! 별 +3'); }
+    else if (r === 'run') { c.alive = true; knockback(c.x, c.y); }
+    else if (state.hearts <= 0) { await faint(); return; }
+    else toast('부스러기가 도망갔다…');
+    state.inv = 1.2; mode = 'play'; return;
+  }
+  if (e.guard) {
+    const gd = e.guard, nut = NUTRIENTS.find(n => n.id === gd.nut);
+    if (gd.hp === gd.maxHp) await talk(who(gd.name, MON[gd.spr]), [gd.taunt, `${nut.role} ${nut.name}는 내가 데려간다! 구하고 싶으면 ${nut.role} 문제로 덤벼라!`]);
+    mode = 'busy';
+    const r = await battle({ name: gd.name, sub: `${nut.role} 담당`, img: MON[gd.spr], get hp() { return gd.hp; }, set hp(v) { gd.hp = v; }, maxHp: gd.maxHp, bank: nut.qs, taunt: gd.taunt, tag: `${nut.role} 퀴즈 배틀` });
+    if (r === 'win') {
+      gd.alive = false; state.rescued.push(nut.id); state.help++; sfx.get(); refreshStatus(); addStars(5);
+      await talk(who(nut.name, SPR[nut.id]), [nut.win, '구해 준 보답으로 배틀에서 "도움 요청"을 한 번 쓸 수 있게 해 줄게! (오답 2개 지우기)']);
+      toast(`${nut.role} ${nut.name} 구출! (${state.rescued.length}/6) 별 +5`);
+      if (state.rescued.length === 6) await wakeBoss();
+    } else if (r === 'run') { knockback(gd.tx*T+8, gd.ty*T+12); toast('일단 후퇴! 준비되면 다시 도전하자.'); }
+    else { await faint(); return; }
+    state.inv = 1.2; mode = 'play'; return;
+  }
+  if (e.boss) {
+    if (BOSS.hp === BOSS.maxHp) await talk(who(BOSS.name, MON.boss), [BOSS.taunt, '영양소 녀석들을 다 구했다고? 하지만 청소년 식습관 문제는 못 풀걸! 덤벼라!']);
+    mode = 'busy';
+    const bank = [...TEEN, ...shuffle(NUTRIENTS.flatMap(n => n.qs)).slice(0, 8), ...shuffle(GENERAL).slice(0, 3)];
+    const r = await battle({ name: BOSS.name, sub:'최종 보스', img: MON.boss, get hp() { return BOSS.hp; }, set hp(v) { BOSS.hp = v; }, maxHp: BOSS.maxHp, bank, taunt: BOSS.taunt, tag:'최종 결전 · 청소년 식생활', boss:true, noRun:false });
+    if (r === 'win') {
+      BOSS.alive = false; state.finished = true; state.endTime = Date.now(); addStars(10); sfx.get();
+      await talk(who(BOSS.name, MON.boss), ['크윽… 규칙적인 식사, 골고루 먹기, 물 마시기… 너무 건강해서 견딜 수가 없다…!']);
+      await talk(TEACH, [`해냈구나, ${state.name}! 정크푸드 대마왕이 물러갔어!`, '영양소 친구들도 모두 돌아왔으니 오늘 급식은 영양 만점이야. 수사 결과를 정리해 줄게!']);
+      showEnding(); return;
+    } else if (r === 'run') { knockback(BOSS.tx*T+16, BOSS.ty*T+12); toast('후퇴! 체력을 채우고 다시 도전하자.'); }
+    else { await faint(); return; }
+    state.inv = 1.2; mode = 'play';
+  }
+}
+function knockback(fx, fy) {
+  const dx = state.x - fx, dy = state.y - fy, d = Math.hypot(dx, dy) || 1;
+  for (let s = 24; s > 0; s -= 2) { const nx = state.x + dx/d*s, ny = state.y + dy/d*s; if (!blocked(nx, ny)) { state.x = nx; state.y = ny; break; } }
+  history = [];
+}
+async function faint() {
+  state.faints++;
+  await talk(NARR, ['눈앞이 핑 돈다… 털썩!', '…정신을 차려 보니 보건실 침대 위였다.']);
+  state.hearts = state.maxHearts; state.x = 4*T+8; state.y = 19*T+12; state.dir = 'up'; history = []; refreshStatus();
+  GUARDS.forEach(g => { if (g.alive) g.hp = g.maxHp; }); if (BOSS.alive) BOSS.hp = BOSS.maxHp;
+  await talk(NURSEW, ['괜찮니? 끼니를 거르면 이렇게 기운이 없어진단다.', '체력은 다 채워 놨어. 몬스터 체력도 회복됐으니 다시 힘내렴!']);
+  state.inv = 1.5; mode = 'play';
+}
+async function wakeBoss() {
+  await talk(NARR, ['쿠구구궁…! 복도 끝 매점 쪽에서 땅이 울린다!']);
+  BOSS.alive = true; state.bossAwake = true;
+  await talk(TEACH, ['큰일이야! 정크푸드 대마왕이 매점 앞에 나타났어!', '청소년 식생활 문제를 잘 생각하면 이길 수 있어. 체력이 부족하면 보건실에 먼저 들르렴!']);
+}
+
+// ================= rush minigame =================
+const RU = { ov: document.getElementById('rush'), score: document.getElementById('rScore'), combo: document.getElementById('rCombo'), time: document.getElementById('rTime'), timer: document.getElementById('rTimer'), food: document.getElementById('rFood'), tip: document.getElementById('rTip'), groups: document.getElementById('rGroups'), btn: document.getElementById('rBtn') };
+let rushPick = null, rushBtn = null;
+GROUPS.forEach((gname, i) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'rg'; b.innerHTML = `<small>${i+1}</small>`; b.append(document.createTextNode(gname)); b.addEventListener('click', () => rushPick && rushPick(i)); RU.groups.append(b); });
+RU.btn.addEventListener('click', () => rushBtn && rushBtn());
+function rush() {
+  return new Promise(resolve => {
+    mode = 'rush'; RU.ov.hidden = false;
+    const GOAL = 12, LIMIT = 45;
+    let score = 0, combo = 0, deadline = 0, timerId = 0, cur = null, prev = null, misses = 0;
+    RU.score.textContent = `0/${GOAL}`; RU.combo.textContent = ''; RU.time.style.width = '100%'; RU.timer.classList.remove('warn');
+    RU.food.className = 'r-food bx'; RU.food.textContent = '준비!';
+    RU.tip.textContent = `급식 재료가 하나씩 나와요. 알맞은 식품군 버튼(숫자 1~6)을 눌러 ${LIMIT}초 안에 ${GOAL}개를 분류하세요! 틀리면 3초가 줄어요.`;
+    RU.btn.hidden = false; RU.btn.textContent = '시작!'; RU.btn.focus({ preventScroll: true });
+    const nextFood = () => { let f; do { f = RUSH_FOODS[Math.floor(Math.random() * RUSH_FOODS.length)]; } while (f === prev); prev = cur = f; RU.food.textContent = f.f; };
+    function end(pass) {
+      clearInterval(timerId); rushPick = null;
+      const left = Math.max(0, Math.ceil((deadline - performance.now()) / 1000));
+      const bonus = pass ? Math.min(12, Math.floor(left / 5) + 3) : 0;
+      RU.food.className = 'r-food bx ' + (pass ? 'ok' : 'no'); RU.food.textContent = pass ? '성공!' : '시간 끝!';
+      RU.tip.textContent = pass ? `${score}개 분류 성공! 남은 시간 ${left}초 · 별 +${bonus}` : `${score}개 분류했어요. ${GOAL}개를 채우면 성공이에요. 다시 도전해 볼까요?`;
+      state.rushBest = Math.max(state.rushBest, score);
+      RU.btn.hidden = false; RU.btn.textContent = pass ? '확인 ▶' : '닫기';
+      RU.btn.focus({ preventScroll: true });
+      rushBtn = () => { rushBtn = null; if (RU.ov.contains(document.activeElement)) document.activeElement.blur(); RU.ov.hidden = true; resolve({ pass, bonus }); };
+    }
+    rushBtn = () => {
+      rushBtn = null; RU.btn.hidden = true; deadline = performance.now() + LIMIT*1000; nextFood(); RU.tip.textContent = '';
+      timerId = setInterval(() => { const left = (deadline - performance.now()) / 1000; RU.time.style.width = Math.min(100, Math.max(0, left / LIMIT * 100)) + '%'; RU.timer.classList.toggle('warn', left < 8); if (left <= 0) end(false); }, 100);
+      rushPick = (gi) => {
+        if (!cur) return;
+        if (gi === cur.g) {
+          score++; combo++; sfx.coin(); RU.food.className = 'r-food bx ok';
+          RU.tip.textContent = combo >= 3 ? `${combo}콤보! 시간 +1초` : '딩동!';
+          if (combo >= 3) deadline += 1000;
+        } else {
+          combo = 0; misses++; sfx.no(); deadline -= 3000; RU.food.className = 'r-food bx no';
+          RU.tip.textContent = `땡! ${cur.tip}`;
+          if (misses <= 6) state.wrong.push({ q: `'${cur.f}'은(는) 어느 식품군일까?`, a: GROUPS[cur.g], exp: cur.tip });
+        }
+        RU.score.textContent = `${score}/${GOAL}`; RU.combo.textContent = combo >= 2 ? `COMBO x${combo}` : '';
+        setTimeout(() => { if (RU.food.classList.contains('ok') || RU.food.classList.contains('no')) RU.food.className = 'r-food bx'; }, 220);
+        if (score >= GOAL) end(true); else nextFood();
+      };
+    };
   });
 }
 
-// ---------- scenes ----------
-async function intro() {
-  busy = true;
-  await say(TEACH, `${state.name}, 큰일 났어! 점심 배식 30분 전인데 영양소 친구들이 모두 사라졌어.`);
-  await say(TEACH, '탄수화물, 단백질, 지방, 무기질, 비타민, 물. 여섯 친구가 급식실 어딘가에 숨어 있어.');
-  await say(TEACH, '반짝이는 곳에 가까이 가서 조사해 봐. 친구들이 내는 문제 3개 중 2개 이상 맞히면 너를 따라올 거야!');
-  await say(TEACH, '여섯 명을 모두 찾으면 나에게 돌아와 줘. 마지막 미션이 기다리고 있어!');
-  closeModal(); busy = false; refreshHud();
-}
-async function meetNutrient(n) {
-  busy = true; sfx.find();
-  await say(NARR, n.spot);
-  await say(spk(n), n.hello);
-  const qs = shuffle(n.qs).slice(0, 3);
-  let ok = 0;
-  for (let i = 0; i < qs.length; i++) {
-    if (await ask(spk(n), qs[i], { tag: `${n.role} 퀴즈`, count: `Q ${i+1}/3 · 정답 ${ok}` })) ok++;
+// ================= NPC talk =================
+async function talkNPC(n) {
+  mode = 'busy';
+  if (n.id === 'teacher') {
+    if (state.finished) { await talk(TEACH, [`${state.name} 덕분에 오늘 급식은 영양 만점이야! 인증서를 다시 보여 줄게.`]); showEnding(); return; }
+    const left = GUARDS.filter(g => g.alive);
+    if (BOSS.alive) await talk(TEACH, ['정크푸드 대마왕은 매점 앞에 있어! 청소년기 식습관 문제를 떠올려 봐.', '결식, 야식, 편식, 무리한 다이어트, 가공식품… 어떤 문제가 생기고 어떻게 고치면 좋을지 생각해 보렴.']);
+    else if (left.length) {
+      const tip = shuffle(left)[0];
+      await talk(TEACH, [`지금까지 ${state.rescued.length}명을 구했구나! 아직 ${left.length}명이 붙잡혀 있어.`, `${tip.area}에서 ${tip.name}를 봤다는 소문이 있어. 화면의 노란 화살표를 따라가 봐!`]);
+    }
+  } else if (n.id === 'cook') {
+    if (state.key) {
+      await talk(COOKW, ['창고 열쇠는 잘 쓰고 있니? 배식 러시를 한 번 더 해 볼래? 별을 더 모을 수 있어!']);
+    } else {
+      await talk(COOKW, ['어이쿠, 바쁘다 바빠! 몬스터들이 식재료를 다 섞어 놨어.', '식재료를 6가지 식품군으로 빨리 나눠 주면 창고 열쇠를 줄게. 창고에 과자 박쥐가 숨어 있거든!']);
+    }
+    mode = 'busy';
+    const r = await rush();
+    if (r.pass) {
+      addStars(r.bonus);
+      if (!state.key) {
+        state.key = true; drawStatic(); sfx.get();
+        await talk(COOKW, ['우와, 손이 엄청 빠르구나! 약속대로 창고 열쇠를 줄게.', '창고는 오른쪽 위에 있어. 복도에서 위로 올라가면 문이 보일 거야!']);
+        toast('창고 열쇠를 얻었다!');
+      } else { await talk(COOKW, [`대단해! 별 ${r.bonus}개를 받으렴.`]); }
+    } else await talk(COOKW, ['아깝다! 준비되면 다시 말 걸어 줘.']);
+    state.rushDone = state.rushDone || r.pass;
+  } else if (n.id === 'nurse') {
+    if (state.hearts < state.maxHearts) {
+      state.hearts = state.maxHearts; refreshStatus(); sfx.heal();
+      await talk(NURSEW, ['어머, 많이 지쳤구나. 체력을 모두 채워 줄게!', '규칙적으로 먹고 잘 자는 게 최고의 보약이란다.']);
+    } else {
+      const tips = ['물은 목마르기 전에 조금씩 자주 마시렴.', '어지럽고 쉽게 피곤하면 철이 부족한 빈혈일 수도 있어.', '아침을 먹으면 오전 수업에 집중이 훨씬 잘 된단다.', '살을 빼겠다고 굶으면 오히려 성장에 방해가 돼.'];
+      await talk(NURSEW, ['건강해 보이는구나! 다치면 언제든 오렴.', shuffle(tips)[0]]);
+    }
   }
-  if (ok >= 2) {
-    state.collected.push(n.id); sfx.get(); refreshHud();
-    await say(spk(n), `${ok}문제 맞혔네! ${n.win}`);
-    toast(`${n.role} ${n.name}를 찾았다! (${state.collected.length}/6)`);
-    if (state.collected.length === 6) await say(NARR, '영양소 친구 6명을 모두 찾았다! 영양사실 앞 영양사 선생님께 가 보자.');
-  } else {
-    await say(spk(n), `${ok}문제밖에 못 맞혔네… 아쉽지만 다시 말을 걸면 한 번 더 도전할 수 있어!`);
-  }
-  closeModal(); busy = false;
-}
-async function meetTeacher() {
-  busy = true;
-  const left = NUTRIENTS.filter(n => !state.collected.includes(n.id));
-  if (state.finished) {
-    await say(TEACH, `${state.name} 덕분에 오늘 급식은 영양 만점이야! 인증서를 다시 볼래?`);
-    closeModal(); busy = false; showEnding(); return;
-  }
-  if (left.length) {
-    await say(TEACH, `지금까지 ${state.collected.length}명을 찾았구나! 아직 ${left.length}명이 더 숨어 있어.`);
-    await say(TEACH, `힌트를 줄게. ${left[Math.floor(Math.random()*left.length)].clue}`);
-    closeModal(); busy = false; return;
-  }
-  await say(TEACH, `와, 여섯 친구를 모두 찾아 줬구나! 고마워, ${state.name}.`);
-  await say(TEACH, '그런데 오늘 급식을 완성하려면 영양 지식이 조금 더 필요해. 마지막 미션 시작!');
-  let i = 0;
-  for (const q of FINAL_TEEN) await ask(TEACH, q, { tag: 'MISSION 1 · 청소년기 영양', count: `${++i}/${FINAL_TEEN.length}` });
-  await say(TEACH, '좋아! 이번엔 식재료 정리를 도와줘.');
-  await sortPuzzle();
-  await say(TEACH, '정리 끝! 벽에 붙일 식품구성자전거 포스터도 확인해 보자.');
-  i = 0;
-  for (const q of FINAL_BIKE) await ask(TEACH, q, { tag: 'MISSION 3 · 식품구성자전거', count: `${++i}/${FINAL_BIKE.length}` });
-  await say(TEACH, '마지막이야! 영양 상담소에 친구들의 고민 쪽지가 도착했어. 알맞은 처방을 골라 줘.');
-  i = 0;
-  for (const cs of FINAL_CASES) {
-    i++;
-    const who = { name: `${cs.who}의 고민`, img: () => PLAYER.down[0] };
-    await say(who, `"${cs.say}"`, { count: `상담 ${i}/${FINAL_CASES.length}` });
-    await ask(who, cs, { tag: 'MISSION 4 · 영양 상담소', count: `상담 ${i}/${FINAL_CASES.length}` });
-  }
-  await say(TEACH, `완벽해! ${state.name} 덕분에 오늘 급식은 영양 만점이야. 수사 결과를 정리해 줄게!`);
-  state.finished = true; sfx.get(); refreshHud();
-  closeModal(); busy = false; showEnding();
-}
-async function readText(s) {
-  busy = true;
-  for (const line of s.lines) await say(NARR, line);
-  closeModal(); busy = false;
+  mode = 'play';
 }
 function interact() {
-  if (busy || !state.started) return;
-  const s = nearest(); if (!s) return;
-  if (s.kind === 'nut') meetNutrient(NUTRIENTS.find(n => n.id === s.id));
-  else if (s.kind === 'teacher') meetTeacher();
-  else readText(s);
+  if (mode !== 'play') return;
+  const t = nearestTalk(); if (!t) return;
+  if (t.kind === 'npc') talkNPC(t.n);
+  else if (t.kind === 'door') { mode = 'busy'; talk(NARR, ['창고 문이 단단히 잠겨 있다.', '주방 조리사님이 열쇠를 갖고 계신다는데…']); }
 }
 
-// ---------- ending ----------
+// ================= ending =================
 function showEnding() {
-  busy = true;
+  mode = 'ending';
   const pct = state.total ? Math.round(state.correct / state.total * 100) : 0;
-  const rank = pct >= 90 ? '수석 영양 탐정' : pct >= 75 ? '베테랑 영양 탐정' : pct >= 60 ? '꼬마 영양 탐정' : '견습 영양 탐정';
+  const totalStars = STAR_POS.length;
+  const rank = pct >= 90 && state.faints === 0 ? '전설의 영양 탐정' : pct >= 85 ? '수석 영양 탐정' : pct >= 70 ? '베테랑 영양 탐정' : pct >= 55 ? '꼬마 영양 탐정' : '견습 영양 탐정';
+  const sec = Math.round(((state.endTime || Date.now()) - state.startTime) / 1000);
   const box = document.getElementById('certBox'); box.innerHTML = '';
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
   const d = new Date();
-  box.append(
-    el('p','seal','CASE CLOSED · 급식실 미스터리'),
-    el('h2',null,'영양 탐정 인증서'),
-    el('p','who',`${state.name} 탐정`),
-    el('span','rank',rank),
-    el('p','cert-date',`${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 · 청소년기 영양 단원 수사 완료`)
-  );
-  const pr = el('div','parade'); NUTRIENTS.forEach(n => { const cvs = document.createElement('canvas'); paintMini(cvs, SPR[n.id]); pr.append(cvs); }); box.append(pr);
+  box.append(el('p','seal','CASE CLOSED · 급식실 미스터리'), el('h2',null,'영양 탐정 인증서'), el('p','who',`${state.name} 탐정`), el('span','rank',rank),
+    el('p','cert-date',`${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 · 청소년기 영양 단원 모험 완료`));
+  const pr = el('div','parade'); NUTRIENTS.forEach(n => { const c = document.createElement('canvas'); paintMini(c, SPR[n.id]); pr.append(c); }); box.append(pr);
   const stats = el('div','stats');
-  [['정답률', pct + '%'], ['맞힌 문제', `${state.correct}/${state.total}`], ['다시 볼 개념', state.wrong.length + '개']].forEach(([k, v]) => {
-    const s = el('div'); s.append(el('span',null,k), el('b',null,v)); stats.append(s);
-  });
+  [['정답률', pct + '%'], ['맞힌 문제', `${state.correct}/${state.total}`], ['모은 별', `${state.stars}`], ['플레이 시간', `${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`]].forEach(([k, v]) => { const s = el('div'); s.append(el('span',null,k), el('b',null,v)); stats.append(s); });
   box.append(stats);
-  const rv = el('div','review'); rv.append(el('h3',null, state.wrong.length ? '다시 보면 좋은 개념' : '틀린 문제가 하나도 없어요!'));
-  if (state.wrong.length) {
-    const ol = el('ol');
-    state.wrong.forEach(w => { const li = el('li'); li.append(el('span',null, w.q + ' → '), el('b','ans', w.a), document.createElement('br'), el('span',null, w.exp)); ol.append(li); });
-    rv.append(ol);
-  }
+  box.append(el('p','cert-date',`기절 ${state.faints}회 · 배식 러시 최고 ${state.rushBest}개 · 맵의 별 ${stars.filter(s => s.got).length}/${totalStars}개 발견`));
+  const seen = new Set(); const uniq = state.wrong.filter(w => { if (seen.has(w.q)) return false; seen.add(w.q); return true; });
+  const rv = el('div','review'); rv.append(el('h3',null, uniq.length ? `다시 보면 좋은 개념 (${uniq.length})` : '틀린 문제가 하나도 없어요!'));
+  if (uniq.length) { const ol = el('ol'); uniq.forEach(w => { const li = el('li'); li.append(el('span',null, w.q + ' → '), el('b','ans', w.a), document.createElement('br'), el('span',null, w.exp)); ol.append(li); }); rv.append(ol); }
   box.append(rv);
-  const row = el('div'); row.style.display = 'flex'; row.style.justifyContent = 'center'; row.style.flexWrap = 'wrap'; row.style.gap = '10px';
-  const again = el('button','pbtn','처음부터 다시 하기'); again.type = 'button'; again.addEventListener('click', resetGame);
-  const look = el('button','pbtn ghost','급식실 둘러보기'); look.type = 'button';
-  look.addEventListener('click', () => { look.blur(); document.getElementById('ending').hidden = true; busy = false; });
+  const row = el('div'); row.style.cssText = 'display:flex;justify-content:center;flex-wrap:wrap;gap:10px';
+  const again = el('button','pbtn','처음부터 다시 하기'); again.type = 'button'; again.addEventListener('click', () => location.reload());
+  const look = el('button','pbtn ghost','학교 둘러보기'); look.type = 'button';
+  look.addEventListener('click', () => { look.blur(); document.getElementById('ending').hidden = true; mode = 'play'; });
   row.append(again, look); box.append(row);
-  document.getElementById('ending').hidden = false;
-  again.focus({ preventScroll: true });
-}
-function resetGame() {
-  Object.assign(state, { collected:[], correct:0, total:0, wrong:[], finished:false, x: 10*TILE+8, y: 12*TILE+10, dir:'up' });
-  history = []; refreshHud();
-  document.getElementById('ending').hidden = true;
-  busy = false; intro();
+  document.getElementById('ending').hidden = false; again.focus({ preventScroll: true });
 }
 
-// ---------- input ----------
+// ================= input =================
 const KEYMAP = { ArrowUp:'up', KeyW:'up', ArrowDown:'down', KeyS:'down', ArrowLeft:'left', KeyA:'left', ArrowRight:'right', KeyD:'right' };
 addEventListener('keydown', e => {
   let tag = e.target.tagName;
   if (tag === 'INPUT') return;
   if (tag === 'BUTTON' && e.target.offsetParent === null) tag = 'BODY';
-  if (!modal.hidden) {
-    const m = /^(Digit|Numpad)([1-4])$/.exec(e.code);
-    if (m && choose) { e.preventDefault(); choose(Number(m[2]) - 1); return; }
-    if ((e.code === 'Space' || e.code === 'Enter') && tag !== 'BUTTON') { e.preventDefault(); advance && advance(); }
+  const digit = /^(Digit|Numpad)([1-6])$/.exec(e.code);
+  const go = (e.code === 'Space' || e.code === 'Enter');
+  if (mode === 'dialog') { if (go && tag !== 'BUTTON') { e.preventDefault(); advance && advance(); } return; }
+  if (mode === 'battle') {
+    if (digit && battleChoose) { e.preventDefault(); battleChoose(Number(digit[2]) - 1); }
+    else if (e.code === 'KeyH' && battleHelp) { e.preventDefault(); battleHelp(); }
+    else if (go && tag !== 'BUTTON' && battleNext) { e.preventDefault(); battleNext(); }
     return;
   }
+  if (mode === 'rush') {
+    if (digit && rushPick) { e.preventDefault(); rushPick(Number(digit[2]) - 1); }
+    else if (go && tag !== 'BUTTON' && rushBtn) { e.preventDefault(); rushBtn(); }
+    return;
+  }
+  if (mode !== 'play') return;
   if (KEYMAP[e.code]) { keys[KEYMAP[e.code]] = true; e.preventDefault(); }
-  else if ((e.code === 'Space' || e.code === 'Enter' || e.code === 'KeyE') && tag !== 'BUTTON') { e.preventDefault(); interact(); }
+  else if ((go || e.code === 'KeyE') && tag !== 'BUTTON') { e.preventDefault(); interact(); }
 });
 addEventListener('keyup', e => { if (KEYMAP[e.code]) keys[KEYMAP[e.code]] = false; });
 addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
-els.next.addEventListener('click', () => advance && advance());
-els.text.addEventListener('click', () => { if (advance && els.next.hidden === false) advance(); else if (typing) finishType(); });
-
 document.querySelectorAll('.padbtn').forEach(b => {
   const dir = b.dataset.dir;
   const on = e => { e.preventDefault(); keys[dir] = true; b.classList.add('on'); try { b.setPointerCapture(e.pointerId); } catch (_) {} };
@@ -1041,29 +1196,27 @@ aBtn.addEventListener('pointerup', () => aBtn.classList.remove('on'));
 aBtn.addEventListener('pointercancel', () => aBtn.classList.remove('on'));
 aBtn.addEventListener('click', e => { if (e.detail === 0) interact(); });
 
-document.getElementById('startForm').addEventListener('submit', e => {
+document.getElementById('startForm').addEventListener('submit', async e => {
   e.preventDefault();
-  const v = document.getElementById('nameInput').value.trim();
-  state.name = v || '탐정';
+  state.name = document.getElementById('nameInput').value.trim() || '탐정';
   try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); ac.resume && ac.resume(); } catch (_) { ac = null; }
   document.getElementById('titleScreen').hidden = true;
-  state.started = true; busy = false;
-  intro();
+  state.started = true; state.startTime = Date.now();
+  await talk(TEACH, [
+    `${state.name}, 큰일 났어! 정크푸드 대마왕의 부하들이 영양소 친구 6명을 붙잡아 갔어!`,
+    '부하들은 주방, 급식실, 복도, 식재료 창고에 숨어 있어. 다가가면 퀴즈 배틀이 시작될 거야.',
+    '정답을 맞히면 공격! 6초 안에 맞히면 크리티컬로 2배 공격이야. 틀리면 체력 ♥이 줄어드니 조심해!',
+    '돌아다니는 과자 부스러기를 잡거나 별을 모으면 탐정 점수가 올라. 지치면 왼쪽 아래 보건실로 가렴.',
+    '화면의 노란 화살표가 다음 목표를 알려 줄 거야. 그럼, 출동!'
+  ]);
 });
 
-// ---------- boot ----------
-function start(data) {
-  if (data && Array.isArray(data.collected) && data.started) {
-    Object.assign(state, data); state.started = true;
-    document.getElementById('titleScreen').hidden = true; busy = false;
-  }
-  drawStatic();
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawStatic);
-  refreshHud();
-  requestAnimationFrame(loop);
-}
-try { window.claude?.hot?.snapshot?.(() => ({ ...state, collected: [...state.collected], wrong: [...state.wrong] })); } catch (_) {}
-window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+// ================= boot =================
+drawStatic();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawStatic);
+refreshStatus();
+requestAnimationFrame(loop);
+window.__nm = { state, GUARDS, BOSS, crumbs };
 })();
 </script>
 </body>
